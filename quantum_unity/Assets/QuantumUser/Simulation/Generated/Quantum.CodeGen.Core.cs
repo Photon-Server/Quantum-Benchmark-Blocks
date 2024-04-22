@@ -663,7 +663,7 @@ namespace Quantum {
     [FieldOffset(248)]
     public PhysicsSceneSettings PhysicsSettings;
     [FieldOffset(528)]
-    public Int32 PlayerConnectedCount;
+    public Int32 ConnectedPlayerCount;
     [FieldOffset(532)]
     [FramePrinter.FixedArrayAttribute(typeof(Input), 6)]
     private fixed Byte _input_[96];
@@ -686,7 +686,7 @@ namespace Quantum {
         hash = hash * 31 + FrameMetaData.GetHashCode();
         hash = hash * 31 + Systems.GetHashCode();
         hash = hash * 31 + PhysicsSettings.GetHashCode();
-        hash = hash * 31 + PlayerConnectedCount.GetHashCode();
+        hash = hash * 31 + ConnectedPlayerCount.GetHashCode();
         hash = hash * 31 + HashCodeUtils.GetArrayHashCode(input);
         hash = hash * 31 + PlayerLastConnectionState.GetHashCode();
         return hash;
@@ -703,7 +703,7 @@ namespace Quantum {
         FrameMetaData.Serialize(&p->FrameMetaData, serializer);
         Quantum.BitSet1024.Serialize(&p->Systems, serializer);
         PhysicsSceneSettings.Serialize(&p->PhysicsSettings, serializer);
-        serializer.Stream.Serialize(&p->PlayerConnectedCount);
+        serializer.Stream.Serialize(&p->ConnectedPlayerCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
         Quantum.BitSet6.Serialize(&p->PlayerLastConnectionState, serializer);
     }

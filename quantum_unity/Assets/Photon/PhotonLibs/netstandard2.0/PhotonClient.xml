@@ -243,12 +243,6 @@
         <member name="F:Photon.Client.EnetChannel.highestReceivedAck">
             <summary>To store the highest acknowledged sequence number (and get some impression what the server already received and stored).</summary>
         </member>
-        <member name="F:Photon.Client.EnetChannel.reliableCommandsInFlight">
-            <summary>Count of reliable commands sent and not yet acknowledged.</summary>
-        </member>
-        <member name="F:Photon.Client.EnetChannel.lowestUnacknowledgedSequenceNumber">
-            <summary>The lowest sequence number sent but not acknowledged yet. This defines the sequence delta "window" for sending subsequent reliable commands.</summary>
-        </member>
         <member name="M:Photon.Client.EnetChannel.QueueIncomingReliableUnsequenced(Photon.Client.NCommand)">
             <summary>Checks and queues incoming reliable unsequenced commands ("send" or "fragment"), if they haven't been received yet.</summary>
             <param name="command">The command to check and queue.</param>
@@ -262,9 +256,6 @@
         </member>
         <member name="F:Photon.Client.EnetPeer.sentReliableCommands">
             <summary>One list for all channels keeps sent commands (for re-sending).</summary>
-        </member>
-        <member name="P:Photon.Client.EnetPeer.sendWindowUpdateRequired">
-            <summary>Thread safe.</summary>
         </member>
         <member name="F:Photon.Client.EnetPeer.outgoingAcknowledgementsPool">
             <summary>One pool of ACK byte arrays ( 20 bytes each)  for all channels to keep acknowledgements.</summary>
@@ -308,9 +299,6 @@
             <summary>
             gathers commands from all (out)queues until udp-packet is full and sends it!
             </summary>
-        </member>
-        <member name="F:Photon.Client.EnetPeer.channelsToUpdateLowestSent">
-            <summary>Used to store temporary values in UpdateSendWindow().</summary>
         </member>
         <member name="M:Photon.Client.EnetPeer.EnqueuePhotonMessage(Photon.Client.StreamBuffer,Photon.Client.SendOptions)">
             <summary>
@@ -620,7 +608,6 @@
         </member>
         <member name="P:Photon.Client.NCommand.IsFlaggedReliable">
             <summary>Checks commandFlags &amp; FV_RELIABLE &amp;&amp; this.commandType &lt; CT_EG_ACK_2.</summary>
-            <remarks>ACK2 commands re-purpose the flags byte, so those never signal "is reliable" for ACK2.</remarks>
         </member>
         <member name="M:Photon.Client.NCommand.CreateAck(System.Byte[],System.Int32,Photon.Client.NCommand,System.Int32)">
             <summary>
@@ -1211,15 +1198,21 @@
             This debug setting enables a new send-ordering for commands. Defaults to true and commands are sent in the order they are created. Set to false to use Enet ordering.
             </summary>
         </member>
-        <member name="F:Photon.Client.PhotonPeer.SendWindowSize">
-             <summary>Defines how far ahead the client can go sending commands (on UDP connections), compared to the acknowledged sequence number.</summary>
-             <remarks>
-             This avoids spamming the receiver and puts focus on resending commands that are older and are needed on the receiver side to dispatch commands.
-            
-             When acks arrive, the SendWindow will move forward and newer commands get sent.
-             This indirectly affects unreliable commands as they are by default sent in creation order.
-             It queues more on the client side than on the server.
-             </remarks>
+        <member name="F:Photon.Client.PhotonPeer.SequenceDeltaLimitResends">
+            <summary>Skips resending (individual) commands if their reliable sequence number is this amount larger than the highest acknowledged sequence number.</summary>
+            <remarks>
+            This puts focus on resending commands that are older and are needed on the receiver side to dispatch commands.
+            It queues more on the client side than on the server.
+            Affects only reliable UDP (based on enet).
+            </remarks>
+        </member>
+        <member name="F:Photon.Client.PhotonPeer.SequenceDeltaLimitSends">
+            <summary>Skips sending reliable and unreliable commands if their reliable sequence number is this amount larger than the highest acknowledged sequence number.</summary>
+            <remarks>
+            This puts focus on resending commands that are older and are needed on the receiver side to dispatch commands.
+            It queues more on the client side than on the server.
+            Affects only reliable UDP (based on enet).
+            </remarks>
         </member>
         <member name="P:Photon.Client.PhotonPeer.QuickResendAttempts">
             <summary>
@@ -2585,7 +2578,7 @@
             <summary>Count of outgoing Fragment commands (data split into multiple commands due to being larger than mtu size).</summary>
         </member>
         <member name="P:Photon.Client.TrafficStatsBase.UdpReliableCommandsSent">
-            <summary>Count of reliable commands sent so far (total on all channels). Does not include resends.</summary>
+            <summary>Count of reliable commands sent so far (total).</summary>
         </member>
         <member name="P:Photon.Client.TrafficStatsBase.UdpReliableCommandsResent">
             <summary>Count of reliable commands which got repeated (due to local repeat-timing before an ACK was received).</summary>

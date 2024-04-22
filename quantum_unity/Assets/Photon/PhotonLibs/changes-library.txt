@@ -3,14 +3,6 @@ Photon C# Client Library - Changelog
 www.photonengine.com  -  Join our Discord Server: https://dashboard.photonengine.com/account/profile
 
 
-Version 5.0.4 (19. April 2024 - rev7511)
-    Changed: Sending of reliable commands. There is now a "Send Window" which limits how many reliable commands are being sent, based off the lowest sent sequence number, only the next XY sequence numbers can be sent. This moves with incoming acknowledgements. This avoids spamming the server, which caused resends.
-    Note: Per channel, the Send Window indirectly affects unreliable and even unsequenced commands by ending the sending for a channel early. Use a separate channel (higher number) for larger chunks of data to avoid related lag.
-    Renamed: PhotonPeer.SequenceDeltaLimitSends to SendWindowSize.
-    Removed: PhotonPeer.SequenceDeltaLimitResends. If a reliable command needs re-sending, it is something the server is waiting for, so we just send.
-    Changed: Stats.UdpReliableCommandsSent is increased only on the initial send of a command (excluding resends).
-    Changed: Stats.UdpFragmentsIn is increased only for new/unique receives of fragments (excluding resends from remote).
-
 Version 5.0.3 (25. March 2024 - rev7477)
     Changed: Statistics handling for the PhotonPeer and connections. Several values moved to the PhotonPeer.Stats (e.g. PeerBase.BytesIn, .BytesOut and PeerBase.timestampOfLastReceive).
     Removed: PhotonPeer.TrafficStatsEnabled. The stats are simplified and it should not be necessary to check a bool to avoid setting some.
