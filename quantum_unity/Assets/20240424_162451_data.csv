@@ -1,0 +1,7 @@
+entities;average ms;total ms;samples;longest ms; std dev
+with_1000_entities;0.3741;187.0368;500;2.5381;0.1181
+with_without_1000_entities;0.3651;182.5704;500;0.7077;0.0790
+with_without_any_1000_entities;0.0469;23.4321;500;0.1699;0.0173
+shuffled_with_1000_entities;0.4775;238.7666;500;1.3653;0.1417
+shuffled_with_without_1000_entities;0.4300;215.0120;500;0.9821;0.1471
+shuffled_with_without_any_1000_entities;0.0667;33.3575;500;0.3579;0.0484

@@ -7438,6 +7438,21 @@ namespace Quantum.Prototypes {
     }
   }
   [System.SerializableAttribute()]
+  [Quantum.Prototypes.Prototype(typeof(Quantum.ComponentTest512))]
+  public unsafe partial class ComponentTest512Prototype : ComponentPrototype<Quantum.ComponentTest512> {
+    public Int32 Val;
+    partial void MaterializeUser(Frame frame, ref Quantum.ComponentTest512 result, in PrototypeMaterializationContext context);
+    public override Boolean AddToEntity(FrameBase f, EntityRef entity, in PrototypeMaterializationContext context) {
+        Quantum.ComponentTest512 component = default;
+        Materialize((Frame)f, ref component, in context);
+        return f.Set(entity, component) == SetResult.ComponentAdded;
+    }
+    public void Materialize(Frame frame, ref Quantum.ComponentTest512 result, in PrototypeMaterializationContext context = default) {
+        result.Val = this.Val;
+        MaterializeUser(frame, ref result, in context);
+    }
+  }
+  [System.SerializableAttribute()]
   [Quantum.Prototypes.Prototype(typeof(Quantum.Input))]
   public unsafe partial class InputPrototype : StructPrototype {
     public Int32 samples;

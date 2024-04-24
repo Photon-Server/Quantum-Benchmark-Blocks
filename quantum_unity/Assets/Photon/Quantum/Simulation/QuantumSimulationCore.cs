@@ -62,6 +62,15 @@ namespace Quantum {
   }
 
   public unsafe partial class Frame {
+    internal static int MaxComponents {
+      get {
+        int result = 256;
+        GetMaxComponentsCodeGen(ref result);
+        return result;
+      }
+    }
+    
+    static partial void GetMaxComponentsCodeGen(ref int maxComponents);
     partial void GetPlayerLastConnectionStateCodeGen(ref BitSetRef bitSet);
     partial void SetPlayerInputCodeGen(PlayerRef player, Input input);
     partial void ResetPhysicsCodeGen();
@@ -585,7 +594,7 @@ namespace Quantum {
       }
     }
 
-      public Frame(FrameContext context, SystemBase[] systemsAll, SystemBase[] systemsRoots, DeterministicSessionConfig sessionConfig, RuntimeConfig runtimeConfig, SimulationConfig simulationConfig, FP deltaTime) : base(context) {
+    public Frame(FrameContext context, SystemBase[] systemsAll, SystemBase[] systemsRoots, DeterministicSessionConfig sessionConfig, RuntimeConfig runtimeConfig, SimulationConfig simulationConfig, FP deltaTime) : base(context) {
       Assert.Check(context != null);
 
       _systemsAll   = systemsAll;
@@ -7389,11 +7398,9 @@ namespace Quantum.Core {
           stream.Serialize(ref Data[i].Entity);
           stream.Serialize(ref Data[i].Data);
           unsafe {
-            var set = Data[i].Components;
-            for (int block = 0; block < ComponentSet.BLOCK_COUNT; ++block) {
-              stream.Serialize((&set)->_set + block);
-            }
-            Data[i].Components = set;
+            var components = Data[i].Components;
+            stream.SerializeBuffer(components.Set, ComponentSet.BLOCK_COUNT * sizeof(ulong));
+            Data[i].Components = components;
           }
           SerializeUser(stream, ref Data[i]);
         }

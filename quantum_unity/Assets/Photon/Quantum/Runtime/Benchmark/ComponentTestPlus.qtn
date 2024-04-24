@@ -1,3 +1,4 @@
+#pragma max_components 512
 component ComponentTest256{ Int32 Val; }
 component ComponentTest257{ Int32 Val; }
 component ComponentTest258{ Int32 Val; }
@@ -254,3 +255,4 @@ component ComponentTest508{ Int32 Val; }
 component ComponentTest509{ Int32 Val; }
 component ComponentTest510{ Int32 Val; }
 component ComponentTest511{ Int32 Val; }
+component ComponentTest512{ Int32 Val; }

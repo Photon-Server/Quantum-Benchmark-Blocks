@@ -12,13 +12,13 @@
 
 
    using ComponentWithInMiddleBlock = ComponentTest250;
-   using ComponentWithInLastBlock = ComponentTest500;
+   using ComponentWithInLastBlock = ComponentTest510;
 
    using WithoutInMiddleBlock = ComponentTest251;
-   using WithoutInLastBlock = ComponentTest501;
+   using WithoutInLastBlock = ComponentTest511;
 
    using AnyInMiddleBlock = ComponentTest252;
-   using AnyInLastBlock = ComponentTest502;
+   using AnyInLastBlock = ComponentTest512;
 
 /*
    using ComponentWithInMiddleBlock = ComponentTest100;
