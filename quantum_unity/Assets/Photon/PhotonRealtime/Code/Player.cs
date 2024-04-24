@@ -66,10 +66,10 @@ namespace Photon.Realtime
         /// <summary>Background field for nickName.</summary>
 		private string nickName = string.Empty;
 
-        /// <summary>Non-unique nickname of this player. Synced automatically in a room.</summary>
+        /// <summary>Nickname of this player. Non-unique and not authenticated. Synced automatically in a room.</summary>
         /// <remarks>
-        /// A player might change his own playername in a room (it's only a property).
-        /// Setting this value updates the server and other players (using an operation).
+        /// A player might change his own nickname in a room (it's only a property).
+        /// Setting this value updates the server and other players (using OpSetProperties internally).
         /// </remarks>
         public string NickName
         {
@@ -89,7 +89,7 @@ namespace Photon.Realtime
                 // update a room, if we changed our nickName locally
                 if (this.IsLocal)
                 {
-                    this.SetPlayerNameProperty();
+                    this.SetNickNameProperty();
                 }
             }
         }
@@ -236,27 +236,13 @@ namespace Photon.Realtime
                 return;
             }
 
-            if (properties.ContainsKey(ActorProperties.PlayerName))
+            // only remote player instances update their NickName from the properties
+            if (!this.IsLocal && properties.ContainsKey(ActorProperties.NickName))
             {
-                string nameInServersProperties = (string)properties[ActorProperties.PlayerName];
-                if (nameInServersProperties != null)
-                {
-                    if (this.IsLocal)
-                    {
-                        // the local playername is different than in the properties coming from the server
-                        // so the local nickName was changed and the server is outdated -> update server
-                        // update property instead of using the outdated nickName coming from server
-                        if (!nameInServersProperties.Equals(this.nickName))
-                        {
-                            this.SetPlayerNameProperty();
-                        }
-                    }
-                    else
-                    {
-                        this.NickName = nameInServersProperties;
-                    }
-                }
+                string nameInServersProperties = (string)properties[ActorProperties.NickName];
+                this.NickName = nameInServersProperties;
             }
+
             if (properties.ContainsKey(ActorProperties.UserId))
             {
                 this.UserId = (string)properties[ActorProperties.UserId];
@@ -414,14 +400,34 @@ namespace Photon.Realtime
             return false;
         }
 
+        
+        /// <summary>If there is a nickname in the room props, but it's not the current (local) one, update the room when joining/joined.</summary>
+        internal bool UpdateNickNameOnJoined()
+        {
+            if (this.RoomReference == null || this.RoomReference.CustomProperties == null || !this.IsLocal)
+            {
+                return false;
+            }
+
+            object nameObj = null;
+            this.RoomReference.CustomProperties.TryGetValue(ActorProperties.NickName, out nameObj);
+            string nickFromProps = nameObj as string;
+
+            if (!string.Equals(this.NickName, nickFromProps))
+            {
+                return this.SetNickNameProperty();
+            }
+
+            return true;
+        }
 
         /// <summary>Uses OpSetPropertiesOfActor to sync this player's NickName (server is being updated with this.NickName).</summary>
-        private bool SetPlayerNameProperty()
+        private bool SetNickNameProperty()
         {
             if (this.RoomReference != null && !this.RoomReference.IsOffline)
             {
                 PhotonHashtable properties = new PhotonHashtable();
-                properties[ActorProperties.PlayerName] = this.nickName;
+                properties[ActorProperties.NickName] = this.NickName;
                 return this.RoomReference.RealtimeClient.OpSetPropertiesOfActor(this.ActorNumber, properties);
             }
 

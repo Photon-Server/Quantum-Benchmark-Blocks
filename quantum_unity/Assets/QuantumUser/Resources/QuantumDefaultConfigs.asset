@@ -1,6 +1,57 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-9220072724673195446
+--- !u!114 &-3778660474229618467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -585149669, guid: b156eeaae3f741b40af66649a4748430, type: 3}
+  m_Name: DefaultConfigKCC2D
+  m_EditorClassIdentifier: 
+  Identifier:
+    Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigKCC2D
+    Guid:
+      Value: 860961123486054305
+  Offset:
+    X:
+      RawValue: 0
+    Y:
+      RawValue: 0
+  Radius:
+    RawValue: 45875
+  MaxPenetration:
+    RawValue: 655
+  PenetrationCorrection:
+    RawValue: 32768
+  Extent:
+    RawValue: 13107
+  MaxContacts: 4
+  LayerMask:
+    BitMask: -1
+  UseManifoldNormal: 0
+  AirControl: 1
+  Acceleration:
+    RawValue: 1638400
+  Braking:
+    RawValue: 655360
+  BaseJumpImpulse:
+    RawValue: 262144
+  MaxSpeed:
+    RawValue: 196608
+  Gravity:
+    X:
+      RawValue: 0
+    Y:
+      RawValue: -655360
+  MaxSlope:
+    RawValue: 3932160
+  MaxSlopeSpeed:
+    RawValue: 327680
+--- !u!114 &-1285866366821650845
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15,15 +66,75 @@ MonoBehaviour:
   Identifier:
     Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigSystems
     Guid:
-      Value: 1313711107744696919
+      Value: 1358011409790591391
   Entries:
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.CullingSystem2D, Quantum.Simulation, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.CullingSystem3D, Quantum.Simulation, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.PhysicsSystem2D, Quantum.Simulation, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.PhysicsSystem3D, Quantum.Simulation, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.NavigationSystem, Quantum.Simulation, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.EntityPrototypeSystem, Quantum.Simulation,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
+  - SystemType:
+      AssemblyQualifiedName: Quantum.Core.PlayerConnectedSystem, Quantum.Simulation,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    SystemName: 
+    StartDisabled: 0
+    Children: []
   - SystemType:
       AssemblyQualifiedName: Quantum.BanchmarkInterator, Quantum.Unity, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
     SystemName: 
     StartDisabled: 0
     Children: []
---- !u!114 &-6838783276225544348
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a89a4a7ca4e4d6e4698ba1a26ca4eae5, type: 3}
+  m_Name: QuantumDefaultConfigs
+  m_EditorClassIdentifier: 
+  SimulationConfig: {fileID: 5914932228517471822}
+  PhysicsMaterial: {fileID: 7872593840403719342}
+  CharacterController2DConfig: {fileID: -3778660474229618467}
+  CharacterController3DConfig: {fileID: 1471099884046046038}
+  NavMeshAgentConfig: {fileID: 589432935984787984}
+  SystemsConfig: {fileID: -1285866366821650845}
+--- !u!114 &589432935984787984
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -38,7 +149,7 @@ MonoBehaviour:
   Identifier:
     Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigNavmeshAgent
     Guid:
-      Value: 432311951306135817
+      Value: 3200656877607624228
   UpdateInterval: 1
   PathQuality: 1
   CachedWaypointCount: 6
@@ -88,100 +199,7 @@ MonoBehaviour:
     RawValue: 262144
   AvoidanceCanReduceSpeed: 0
   ShowDebugAvoidance: 0
---- !u!114 &-3495839581744278493
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1548453761, guid: b156eeaae3f741b40af66649a4748430, type: 3}
-  m_Name: DefaultConfigPhysicsMaterial
-  m_EditorClassIdentifier: 
-  Identifier:
-    Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigPhysicsMaterial
-    Guid:
-      Value: 2572858936660373974
-  Restitution:
-    RawValue: 0
-  RestitutionCombineFunction: 3
-  FrictionStatic:
-    RawValue: 39321
-  FrictionDynamic:
-    RawValue: 39321
-  FrictionCombineFunction: 3
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a89a4a7ca4e4d6e4698ba1a26ca4eae5, type: 3}
-  m_Name: QuantumDefaultConfigs
-  m_EditorClassIdentifier: 
-  SimulationConfig: {fileID: 6158507487800976543}
-  PhysicsMaterial: {fileID: -3495839581744278493}
-  CharacterController2DConfig: {fileID: 3054952753231020325}
-  CharacterController3DConfig: {fileID: 5783831611772105291}
-  NavMeshAgentConfig: {fileID: -6838783276225544348}
-  SystemsConfig: {fileID: -9220072724673195446}
---- !u!114 &3054952753231020325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -585149669, guid: b156eeaae3f741b40af66649a4748430, type: 3}
-  m_Name: DefaultConfigKCC2D
-  m_EditorClassIdentifier: 
-  Identifier:
-    Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigKCC2D
-    Guid:
-      Value: 2485794414780840096
-  Offset:
-    X:
-      RawValue: 0
-    Y:
-      RawValue: 0
-  Radius:
-    RawValue: 45875
-  MaxPenetration:
-    RawValue: 655
-  PenetrationCorrection:
-    RawValue: 32768
-  Extent:
-    RawValue: 13107
-  MaxContacts: 4
-  LayerMask:
-    BitMask: -1
-  UseManifoldNormal: 0
-  AirControl: 1
-  Acceleration:
-    RawValue: 1638400
-  Braking:
-    RawValue: 655360
-  BaseJumpImpulse:
-    RawValue: 262144
-  MaxSpeed:
-    RawValue: 196608
-  Gravity:
-    X:
-      RawValue: 0
-    Y:
-      RawValue: -655360
-  MaxSlope:
-    RawValue: 3932160
-  MaxSlopeSpeed:
-    RawValue: 327680
---- !u!114 &5783831611772105291
+--- !u!114 &1471099884046046038
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,7 +214,7 @@ MonoBehaviour:
   Identifier:
     Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigKCC3D
     Guid:
-      Value: 3029504378115851438
+      Value: 2007275350365342690
   Offset:
     X:
       RawValue: 0
@@ -236,7 +254,7 @@ MonoBehaviour:
     RawValue: 3932160
   MaxSlopeSpeed:
     RawValue: 327680
---- !u!114 &6158507487800976543
+--- !u!114 &5914932228517471822
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -251,7 +269,7 @@ MonoBehaviour:
   Identifier:
     Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigSimulation
     Guid:
-      Value: 1299250024020220586
+      Value: 4097357643188193018
   Entities:
     CommitCommandsMode: 0
     DefaultEntityCapacity: 1024
@@ -314,13 +332,13 @@ MonoBehaviour:
     DefaultJointsCapacity: 128
     DefaultPhysicsMaterial:
       Id:
-        Value: 2572858936660373974
+        Value: 3783229790996391002
     DefaultCharacterController2D:
       Id:
-        Value: 2485794414780840096
+        Value: 860961123486054305
     DefaultCharacterController3D:
       Id:
-        Value: 3029504378115851438
+        Value: 2007275350365342690
     Layers:
     - Default
     - TransparentFX
@@ -358,7 +376,7 @@ MonoBehaviour:
   Navigation:
     DefaultNavMeshAgent:
       Id:
-        Value: 432311951306135817
+        Value: 3200656877607624228
     EnableNavigationCallbacks: 0
     HeightThresholdForWaypoints:
       RawValue: 65536
@@ -382,3 +400,27 @@ MonoBehaviour:
   HeapPageShift: 15
   HeapPageCount: 256
   HeapExtraCount: 0
+--- !u!114 &7872593840403719342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1548453761, guid: b156eeaae3f741b40af66649a4748430, type: 3}
+  m_Name: DefaultConfigPhysicsMaterial
+  m_EditorClassIdentifier: 
+  Identifier:
+    Path: QuantumUser/Resources/QuantumDefaultConfigs|DefaultConfigPhysicsMaterial
+    Guid:
+      Value: 3783229790996391002
+  Restitution:
+    RawValue: 0
+  RestitutionCombineFunction: 3
+  FrictionStatic:
+    RawValue: 39321
+  FrictionDynamic:
+    RawValue: 39321
+  FrictionCombineFunction: 3

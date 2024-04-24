@@ -453,7 +453,11 @@ namespace Photon.Realtime
     public class ActorProperties
     {
         /// <summary>(255) Name of a player/actor.</summary>
-        public const byte PlayerName = 255; // was: 1
+        [Obsolete("Renamed. Use ActorProperties.NickName.")]
+        public const byte PlayerName = 255;
+
+        /// <summary>(255) NickName of a player/actor.</summary>
+        public const byte NickName = 255;
 
         /// <summary>(254) Tells you if the player is currently in this game (getting events live).</summary>
         /// <remarks>A server-set value for async games, where players can leave the game and return later.</remarks>

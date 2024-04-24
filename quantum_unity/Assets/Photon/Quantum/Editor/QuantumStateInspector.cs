@@ -670,10 +670,6 @@ namespace Quantum.Editor {
       public long ComponentSet1;
       public long ComponentSet2;
       public long ComponentSet3;
-      public long ComponentSet4;
-      public long ComponentSet5;
-      public long ComponentSet6;
-      public long ComponentSet7;
       public int EntityRefIndex;
       public int EntityRefVersion;
       public int InspectorId;
@@ -690,39 +686,13 @@ namespace Quantum.Editor {
             lp[3] = ComponentSet3;
             return result;
           }
-          if (ComponentSet.SIZE == sizeof(long) * 8) {
-            ComponentSet result = default;
-            long* lp = (long*)&result;
-            lp[0] = ComponentSet0;
-            lp[1] = ComponentSet1;
-            lp[2] = ComponentSet2;
-            lp[3] = ComponentSet3;
-            lp[4] = ComponentSet4;
-            lp[5] = ComponentSet5;
-            lp[6] = ComponentSet6;
-            lp[7] = ComponentSet7;
-            return result;
-          }
         }
         set {
-          if (ComponentSet.SIZE == sizeof(long) * 4) {
-            long* lp = (long*)&value;
-            ComponentSet0 = lp[0];
-            ComponentSet1 = lp[1];
-            ComponentSet2 = lp[2];
-            ComponentSet3 = lp[3];
-          }
-          if (ComponentSet.SIZE == sizeof(long) * 8) {
-            long* lp = (long*)&value;
-            ComponentSet0 = lp[0];
-            ComponentSet1 = lp[1];
-            ComponentSet2 = lp[2];
-            ComponentSet3 = lp[3];
-            ComponentSet4 = lp[4];
-            ComponentSet5 = lp[5];
-            ComponentSet6 = lp[6];
-            ComponentSet7 = lp[7];
-          }
+          long* lp = (long*)&value;
+          ComponentSet0 = lp[0];
+          ComponentSet1 = lp[1];
+          ComponentSet2 = lp[2];
+          ComponentSet3 = lp[3];
         }
       }
 

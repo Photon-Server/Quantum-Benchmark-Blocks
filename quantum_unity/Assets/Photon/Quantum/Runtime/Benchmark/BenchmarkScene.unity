@@ -1877,7 +1877,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 599829040}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fc6520cd52e7414498f2bcfab79757c, type: 3}
+  m_Script: {fileID: 11500000, guid: 347021eb4f3073144851a48292536318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Prototype:
@@ -2503,18 +2503,18 @@ MonoBehaviour:
     Seed: 0
     Map:
       Id:
-        Value: 437847089826119651
+        Value: 501057418472342182
     SimulationConfig:
       Id:
-        Value: 1299250024020220586
+        Value: 4097357643188193018
     SystemsConfig:
       Id:
-        Value: 1313711107744696919
+        Value: 1358011409790591391
   SessionConfig: {fileID: 0}
   LocalPlayers:
   - PlayerAvatar:
       Id:
-        Value: 355627853258267115
+        Value: 0
     PlayerNickname: Test
   MaxPlayerCount: 0
   SimulationSpeedMultiplier: 1
@@ -3269,8 +3269,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fa3c5a76368b2449374f8516187f60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfSamples: 600
-  grownScale: 0
+  numberOfSamples: 500
+  grownScale: 1000
   max: 0
   running: 0
   samplesInput: {fileID: 1970745353}
@@ -5925,7 +5925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0413bd8db4f29e3488d92156dc397190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Asset: {fileID: 11400000, guid: 0838d2dad13bea243866745b1117054d, type: 2}
+  Asset: {fileID: 11400000, guid: 03bfdb0d0efb9ee46a7e100c89ea4650, type: 2}
   BakeAllMode: 112
   NavMeshSerializeType: 0
   StaticCollider2DReferences: []
@@ -5954,6 +5954,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2333485818251656766, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2333485818424701968, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
@@ -5977,6 +5981,14 @@ PrefabInstance:
     - target: {fileID: 2333485818424701968, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[4].m_TargetAssemblyTypeName
       value: LocalInput, Quantum.Unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 2333485818517477478, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
+      propertyPath: m_Text
+      value: Entities
+      objectReference: {fileID: 0}
+    - target: {fileID: 2333485818791023431, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2333485819239070690, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
       propertyPath: m_Pivot.x
@@ -6068,7 +6080,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2333485819818622715, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
       propertyPath: m_Text
-      value: 10
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 2333485819859266969, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -6084,7 +6096,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2333485820006120977, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}
       propertyPath: m_Text
-      value: 50
+      value: 500
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7b1f841eb8d0994b801522ab60c363d, type: 3}

@@ -9,27 +9,27 @@
   using WithoutInFirstBlock = ComponentTest040;
   using AnyInFirstBlock = ComponentTest041;
 
-//   // 8 BLOCKS
-// #if !BOOLEAN_FALSE
-//   using ComponentWithInMiddleBlock = ComponentTest250;
-//   using ComponentWithInLastBlock = ComponentTest500;
-//   
-//   using WithoutInMiddleBlock = ComponentTest251;
-//   using WithoutInLastBlock = ComponentTest501;
-//
-//   using AnyInMiddleBlock = ComponentTest252;
-//   using AnyInLastBlock = ComponentTest502;
-// #else
-  // 4 BLOCKS
-  using ComponentWithInMiddleBlock = ComponentTest100;
-  using ComponentWithInLastBlock = ComponentTest200;
-  
-  using WithoutInMiddleBlock = ComponentTest101;
-  using WithoutInLastBlock = ComponentTest201;
 
-  using AnyInMiddleBlock = ComponentTest102;
-  using AnyInLastBlock = ComponentTest202;
-// #endif
+/*
+   using ComponentWithInMiddleBlock = ComponentTest250;
+   using ComponentWithInLastBlock = ComponentTest500;
+
+   using WithoutInMiddleBlock = ComponentTest251;
+   using WithoutInLastBlock = ComponentTest501;
+
+   using AnyInMiddleBlock = ComponentTest252;
+   using AnyInLastBlock = ComponentTest855;
+*/
+
+   using ComponentWithInMiddleBlock = ComponentTest100;
+   using ComponentWithInLastBlock = ComponentTest200;
+  
+   using WithoutInMiddleBlock = ComponentTest101;
+   using WithoutInLastBlock = ComponentTest201;
+
+   using AnyInMiddleBlock = ComponentTest102;
+   using AnyInLastBlock = ComponentTest202;
+
   
   public unsafe class BanchmarkInterator : SystemMainThread {
 
@@ -49,7 +49,6 @@
       while (createdWithAmount < ammount) {
         var entity = f.Create();
         f.Add<ComponentAlwaysAdded>(entity);
-
         if (f.RNG->Next() > FP._0_33) {
           createdWithAmount++;
           f.Add<ComponentWithInMiddleBlock>(entity);
@@ -124,51 +123,6 @@
       }
 
       if(i->runnig == false) return;
-
-      //int N_TESTS = i->max == 0 ? 1 : i->max + 1;
-      //int SAMPLES = i->samples;
-      //int currentFrame = (f.Number - singleton->startedFrame) + SAMPLES;
-    
-      /*if(currentFrame == SAMPLES * N_TESTS) {
-        string header = "entities;average ms;total ms;samples;longest ms; std dev\n";
-        string dataText = "";
-        var benchData = benchmark.GetData();
-        
-        foreach(var data in benchData) {
-          dataText += ($"{data.Key};" +
-            $"{data.Value.AverageElapsedMs.ToString("0.0000",culture)};" +
-            $"{data.Value.TotalMs.ToString("0.0000",culture)};" +
-            $"{data.Value.SampleCount.ToString("0",culture)};" +
-            $"{data.Value.LongestElapsedMs.ToString("0.0000",culture)};" +
-            $"{data.Value.StdDevMs.ToString("0.0000",culture)}\n");
-        }
-        f.Events.WriteLog($"Log document saved at: {singleton->path}");
-        string name = DateTime.Now.ToString("yyyyMMdd_HHmmss_") + singleton->filename;
-        string path = Path.Combine(singleton->path, name);
-        File.WriteAllText(path, header + dataText);
-      }*/
-
-      //int numberOfEntities = (currentFrame / SAMPLES) * i->grown;
-      /*if(currentFrame % SAMPLES == 0) {
-        List<EntityRef> result = new List<EntityRef>();
-        f.GetAllEntityRefs(result);
-        var current = result.Count;
-        if(current < numberOfEntities) {
-          CreateEntity(f, numberOfEntities - current);
-        }
-
-        if(benchmark.GetData().TryGetValue(result.Count + "_entities", out var data)){
-          string log = "";
-          log += ($"{result.Count + "_entities"} Average : {data.AverageElapsedMs.ToString("0.0000",culture)}ms " +
-            $"| Total : {data.TotalMs.ToString("0.0000",culture)}ms " +
-            $"| Samples : {data.SampleCount.ToString("0",culture)} " +
-            $"| Longest : {data.LongestElapsedMs.ToString("0.0000",culture)}ms" +
-            $"| Std Dev : {data.StdDevMs.ToString("0.0000",culture)}\n");
-          f.Events.Log(log);
-        }
-      }*/
-
-      //if(currentFrame >= SAMPLES * N_TESTS) return;
 
       //FIXED NUMBER OF ENTITIES TEST
       int SAMPLES = i->samples;

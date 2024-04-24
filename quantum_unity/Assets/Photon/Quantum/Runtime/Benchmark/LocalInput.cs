@@ -37,6 +37,7 @@ public unsafe class LocalInput : MonoBehaviour {
   public void StartRunning() {
     running = true;
     //TODO: a command is better
+    SetNumberOfSamples();
     var singleton = QuantumRunner.Default.Game.Frames.Verified.Unsafe.GetPointerSingleton<BenchmarkSingleton>();
     singleton->filename = fileNameInput.text;
     singleton->path = pathInput.text;

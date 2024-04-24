@@ -15,7 +15,7 @@ MonoBehaviour:
   Identifier:
     Path: QuantumUser/Resources/QuantumMap
     Guid:
-      Value: 437847089826119651
+      Value: 533558691768836790
   UserAsset:
     Id:
       Value: 0
@@ -30,7 +30,7 @@ MonoBehaviour:
   TriangleMeshCellSize: 4
   StaticColliders3DTrianglesData:
     Id:
-      Value: 347961080188231787
+      Value: 300339556446334810
   SerializeTrianglesMetadata: 0
   GridSizeX: 64
   GridSizeY: 64
@@ -40,17 +40,8 @@ MonoBehaviour:
   StaticColliders2D: []
   StaticColliders3D: []
   MapEntities:
-  - Components:
-    - rid: 6983632761919635456
+  - Components: []
   SerializedTriangleDataUncompressedSize: 8
   references:
     version: 2
-    RefIds:
-    - rid: 6983632761919635456
-      type: {class: BenchmarkSingletonPrototype, ns: Quantum.Prototypes, asm: Quantum.Simulation}
-      data:
-        startedFrame: 0
-        running:
-          Value: 0
-        path: 
-        filename: 
+    RefIds: []

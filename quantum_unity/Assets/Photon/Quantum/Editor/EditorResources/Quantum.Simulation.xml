@@ -335,7 +335,7 @@
             Returns the max player count that the simulation was started with <see cref="F:Photon.Deterministic.DeterministicSessionConfig.PlayerCount"/>.
             </summary>
         </member>
-        <member name="P:Quantum.Frame.PlayerCountConnected">
+        <member name="P:Quantum.Frame.PlayerConnectedCount">
             <summary>
             Returns the number of players that are currently connected, requires the <see cref="T:Quantum.Core.PlayerConnectedSystem"/>.
             </summary>
