@@ -458,10 +458,7 @@ namespace Quantum {
     /// <summary>
     /// Returns the number of players that are currently connected, requires the <see cref="PlayerConnectedSystem"/>.
     /// </summary>
-    public Int32 PlayerConnectedCount { 
-      [MethodImpl(MethodImplOptions.AggressiveInlining)] get => GlobalsCore->PlayerConnectedCount; 
-      internal set => GlobalsCore->PlayerConnectedCount = value;
-    }
+    public Int32 PlayerCountConnected { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => GlobalsCore->ConnectedPlayerCount; }
 
     /// <summary>
     /// Returns the global navmesh region mask that controls toggling on/off regions.
@@ -7584,10 +7581,10 @@ namespace Quantum.Core {
         
         if (isPlayerConnected != playerLastConnectionStateRef.IsSet(p)) {
           if (isPlayerConnected) {
-            f.PlayerConnectedCount++;
+            f.Global->ConnectedPlayerCount++;
             f.Signals.OnPlayerConnected(p);
           } else {
-            f.PlayerConnectedCount--;
+            f.Global->ConnectedPlayerCount--;
             f.Signals.OnPlayerDisconnected(p);
           }
 

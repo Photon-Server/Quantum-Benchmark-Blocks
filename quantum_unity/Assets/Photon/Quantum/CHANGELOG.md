@@ -89,34 +89,7 @@
 
 ## Preview
 
-### Build 1439 (Apr 23, 2024)
-
-**Bug Fixes**
-
-- Fixed: NullReferenceException when late-joining a game and having at least on physics engine system disabled (2D or 3D)
-
-### Build 1438 (Apr 20, 2024)
-
-**Changes**
-
-- Upgrading Photon Realtime to version 5.0.4
-
-### Build 1435 (Apr 17, 2024)
-
-**Bug Fixes**
-
-- Fixed: The normal of the collision between a capsule and a box when the first is completely inside the second
-- Fixed: Physics gizmos not obeying the proper config
-
-### Build 1428 (Apr 16, 2024)
-
-**Bug Fixes**
-
-- Fixed: Broadphase queries that stopped to work after add frame teleport to the transforms
-- Fixed: Replace toolbar in overlay for performance
-- Fixed: An issue in the party code generation of the Quantum menu that caused the wrong region being decoded
-
-### Build 1427 (Apr 15, 2024)
+### Build 1437 (Apr 19, 2024)
 
 **Breaking Changes**
 
@@ -124,7 +97,11 @@
 
 **What's New**
 
-- `Frame.PlayerConnectedCount`
+- `Frame.ConnectedPlayerCount`
+
+**Bug Fixes**
+
+- Fixed: `NullReferenceExceptions` when using ComponentFilterStruct
 
 ### Build 1425 (Apr 12, 2024)
 
