@@ -10,7 +10,7 @@
   using AnyInFirstBlock = ComponentTest041;
 
 
-
+    /*
    using ComponentWithInMiddleBlock = ComponentTest250;
    using ComponentWithInLastBlock = ComponentTest510;
 
@@ -19,8 +19,8 @@
 
    using AnyInMiddleBlock = ComponentTest252;
    using AnyInLastBlock = ComponentTest512;
+    */
 
-/*
    using ComponentWithInMiddleBlock = ComponentTest100;
    using ComponentWithInLastBlock = ComponentTest200;
   
@@ -29,7 +29,7 @@
 
    using AnyInMiddleBlock = ComponentTest102;
    using AnyInLastBlock = ComponentTest202;
-*/
+
   
   public unsafe class BanchmarkInterator : SystemMainThread {
 
