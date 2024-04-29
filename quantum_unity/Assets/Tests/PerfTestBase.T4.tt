@@ -1,0 +1,62 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#@ import namespace="System.Linq" #>
+
+
+namespace Tests {
+  using NUnit.Framework;
+  using Photon.Deterministic;
+  using Quantum;
+  using UnityEngine;
+  using Assert = NUnit.Framework.Assert;
+
+  using ComponentAlwaysAdded = Quantum.Transform3D;
+
+  partial class PerfTestBase {
+<#
+  for(int i = 1; i <= 8; ++i) {
+    var genericParams = string.Join(", ", Enumerable.Range(0, i).Select(x => $"T{x}"));
+    var genericParamsConstraints = string.Join(" ", Enumerable.Range(0, i).Select(x => $"where T{x} : unmanaged, IComponent"));
+    var genericOut = string.Join(", ", Enumerable.Range(0, i).Select(x => $"out T{x} t{x}"));
+#>
+    public void NoShuffle<<#=genericParams#>>(params ComponentSpec[] specs) <#=genericParamsConstraints#> {
+      RunTest(frame => {
+          int count  = 0;
+          var filter = frame.Filter<<#=genericParams#>>();
+          while (filter.Next(out EntityRef e, <#=genericOut#>)) {
+            count++;
+          }
+          Assert.NotZero(count);
+          return count;
+        }, oneTimeSetUp: f => { 
+          CreateEntities(f, DefaultEntityCount, alwaysAdd: typeof(ComponentAlwaysAdded), specs); 
+        }
+      );
+    }
+
+    public void WithShuffle<<#=genericParams#>>(params ComponentSpec[] specs) <#=genericParamsConstraints#> {
+      RunTest(frame => {
+          int count  = 0;
+          var filter = frame.Filter<<#=genericParams#>>();
+          while (filter.Next(out EntityRef e, <#=genericOut#>)) {
+            count++;
+          }
+          Assert.NotZero(count);
+          return count;
+        }, 
+        oneTimeSetUp: f => { 
+          CreateEntities(f, DefaultEntityCount, alwaysAdd: typeof(ComponentAlwaysAdded), specs);
+          for (int i = 0; i < 5; i++) {
+            int count = DestroyEntities<ComponentAlwaysAdded>(f, FP._0_20);
+            CreateEntities(f, count, alwaysAdd: typeof(ComponentAlwaysAdded), specs);
+          }
+        }
+      );
+    }
+<#
+  }
+#>
+  }
+}

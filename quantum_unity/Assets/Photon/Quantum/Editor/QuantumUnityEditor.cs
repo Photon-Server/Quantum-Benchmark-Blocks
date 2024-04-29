@@ -10307,6 +10307,7 @@ namespace Quantum.Editor {
       try {
         delegateType ??= typeof(T);
         
+        
         var method = GetMethodOrThrow(type, methodName, flags, delegateType, fallbackSwizzles, out var swizzle);
         if (swizzle == null && typeof(T) == delegateType) {
           return (T)Delegate.CreateDelegate(typeof(T), method);
@@ -10319,7 +10320,6 @@ namespace Quantum.Editor {
           parameters.Add(Expression.Parameter(delegateParameters[i].ParameterType, $"param_{i}"));
         }
 
-        
         var convertedParameters = new List<Expression>();
         {
           var methodParameters = method.GetParameters();
@@ -15942,11 +15942,14 @@ namespace Quantum.Editor {
     }
 
     public override VisualElement CreatePanelContent() {
+      if (QuantumGameGizmosSettingsScriptableObject.TryGetGlobal(out var settings) == false)
+        return null;
+      
       // hot reload re-uses the same class instance, so we need to clear the state
       _gizmoEntryToToggle.Clear();
       _headers.Clear();
 
-      _serializedObject = new SerializedObject(QuantumGameGizmosSettingsScriptableObject.Global);
+      _serializedObject = new SerializedObject(settings);
       _settingsProperty =
         _serializedObject.FindProperty(nameof(QuantumGameGizmosSettingsScriptableObject.Global.Settings));
 
@@ -15959,7 +15962,7 @@ namespace Quantum.Editor {
       root.style.maxHeight = containerWindow.position.height * .925f;
 
       SetGlobalSettingsUI(root);
-      var sv = CreateScrollView(root);
+      var sv = CreateScrollView(root); 
       CreateScrollViewContent(sv);
       BindSearchBar(root);
 
@@ -15972,7 +15975,6 @@ namespace Quantum.Editor {
       Color unityDark = new Color32(56, 56, 56, 255);
 
       const string bgClassName = "overlay-box-background";
-      ToggleElement(root, false);
       
       // set background color!!
       EditorApplication.delayCall += () => {
@@ -16011,8 +16013,6 @@ namespace Quantum.Editor {
             var bg = modalPopup.Q(className: bgClassName);
             bg.style.backgroundColor = unityDark;
         }
-        
-        ToggleElement(root, true);
       };
     }
     
@@ -17722,10 +17722,11 @@ namespace Quantum {
       out ToolbarButton styleButton,
       out ToolbarToggle selectedToggle,
       out VisualElement optionsParent) {
-      var toolbar = new Toolbar();
+      var toolbar = new VisualElement();
 
       toolbar.style.paddingLeft = 5;
       toolbar.style.paddingRight = 5;
+      toolbar.style.flexDirection = FlexDirection.Row;
 
       var left = new VisualElement();
       left.style.justifyContent = Justify.FlexStart;

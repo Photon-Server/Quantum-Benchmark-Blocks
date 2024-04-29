@@ -3214,12 +3214,12 @@ namespace Quantum {
         }
       }
       
-      bool shouldDrawCharacterController = ShouldDraw(_settings.CharacterController, selected, false);
+      bool shouldDrawCharacterController = ShouldDraw(_settings.CharacterController, selected);
       
 #if QUANTUM_ENABLE_PHYSICS2D && !QUANTUM_DISABLE_PHYSICS2D
       bool shouldDraw = isDynamic2D
-        ? ShouldDraw(_settings.DynamicColliders, selected, false)
-        : ShouldDraw(_settings.KinematicColliders, selected, false);
+        ? ShouldDraw(_settings.DynamicColliders, selected)
+        : ShouldDraw(_settings.KinematicColliders, selected);
 
       if (config2D != null && shouldDraw) {
         var color = isDynamic2D
@@ -3296,8 +3296,8 @@ namespace Quantum {
 #endif
 #if QUANTUM_ENABLE_PHYSICS3D && !QUANTUM_DISABLE_PHYSICS3D
       bool shouldDraw3D = isDynamic3D
-        ? ShouldDraw(_settings.DynamicColliders, selected, false)
-        : ShouldDraw(_settings.KinematicColliders, selected, false);
+        ? ShouldDraw(_settings.DynamicColliders, selected)
+        : ShouldDraw(_settings.KinematicColliders, selected);
 
       if (config3D != null && shouldDraw3D) {
         var style = behaviour.PhysicsBody.Config3D.HasFlag(PhysicsBody3D.ConfigFlags.IsKinematic)
@@ -3362,6 +3362,10 @@ namespace Quantum {
     [DrawGizmo(GizmoType.Pickable | GizmoType.Selected | GizmoType.NonSelected)]
     static void DrawGizmos_MapData(QuantumMapData behaviour, GizmoType gizmoType) {
       if (Application.isPlaying) {
+        return;
+      }
+
+      if (behaviour.Asset == null) {
         return;
       }
 
@@ -4052,14 +4056,13 @@ namespace Quantum {
   using UnityEditor;
   using UnityEngine;
   using Joint = Physics2D.Joint;
-  
+
   public partial class QuantumGameGizmos {
     private static unsafe void DrawRuntimePhysicsComponents_2D(QuantumGameGizmosSettings settings, Frame frame) {
       // ################## Components: PhysicsCollider2D ##################
-      if (ShouldDraw(_settings.DynamicColliders, false)) {
-        // ################## Components: PhysicsCollider2D ##################
-        foreach (var (handle, collider) in frame.GetComponentIterator<PhysicsCollider2D>()) {
-          var entry = _settings.GetEntryForPhysicsEntity2D(frame, handle);
+      foreach (var (handle, collider) in frame.GetComponentIterator<PhysicsCollider2D>()) {
+        var entry = _settings.GetEntryForPhysicsEntity2D(frame, handle);
+        if (ShouldDraw(entry, false, false)) {
           DrawCollider2DGizmo(
             frame,
             handle,
@@ -4071,7 +4074,7 @@ namespace Quantum {
       }
 
       // ################## Components: CharacterController2D ##################
-      if (ShouldDraw(_settings.CharacterController, false)) {
+      if (ShouldDraw(_settings.CharacterController, false, false)) {
         foreach (var (entity, cc) in frame.GetComponentIterator<CharacterController2D>()) {
           if (frame.Unsafe.TryGetPointer(entity, out Transform2D* t) &&
               frame.TryFindAsset(cc.Config, out CharacterController2DConfig config)) {
@@ -4087,7 +4090,7 @@ namespace Quantum {
       }
 
       // ################## Components: PhysicsJoints2D ##################
-      if (ShouldDraw(_settings.PhysicsJoints, false)) {
+      if (ShouldDraw(_settings.PhysicsJoints, false, false)) {
         foreach (var (handle, jointsComponent) in frame.Unsafe.GetComponentBlockIterator<PhysicsJoints2D>()) {
           if (frame.Unsafe.TryGetPointer(handle, out Transform2D* transform) &&
               jointsComponent->TryGetJoints(frame, out var jointsBuffer, out var jointsCount)) {
@@ -4112,7 +4115,7 @@ namespace Quantum {
     public static unsafe void DrawCharacterController2DGizmo(Vector3 position, CharacterController2DConfig config,
       Color radiusColor, Color extentsColor, bool disableFill) {
       var style = disableFill ? QuantumGizmoStyle.FillDisabled : default;
-      
+
       GizmoUtils.DrawGizmosCircle(position + config.Offset.ToUnityVector3(),
         config.Radius.AsFloat, radiusColor, style: style);
       GizmoUtils.DrawGizmosCircle(position + config.Offset.ToUnityVector3(),
@@ -4597,7 +4600,7 @@ namespace Quantum {
   using Physics3D;
   using UnityEditor;
   using UnityEngine;
-  
+
   public partial class QuantumGameGizmos {
     private static StaticMeshColliderGizmoData GetOrCreateGizmoData(MonoBehaviour behaviour) {
       if (!_meshGizmoData.TryGetValue(behaviour, out var data)) {
@@ -4697,9 +4700,9 @@ namespace Quantum {
 
     private static unsafe void DrawRuntimePhysicsComponents_3D(QuantumGameGizmosSettings settings, Frame frame) {
       // ################## Components: PhysicsCollider3D ##################
-      if (ShouldDraw(_settings.DynamicColliders, false, false)) {
-        foreach (var (handle, collider) in frame.GetComponentIterator<PhysicsCollider3D>()) {
-          var entry = _settings.GetEntryForPhysicsEntity3D(frame, handle);
+      foreach (var (handle, collider) in frame.GetComponentIterator<PhysicsCollider3D>()) {
+        var entry = _settings.GetEntryForPhysicsEntity3D(frame, handle);
+        if (ShouldDraw(entry, false, false)) {
           DrawCollider3DGizmo(
             frame,
             handle,
@@ -4978,7 +4981,7 @@ namespace Quantum {
     public static unsafe void DrawCollider3DGizmo(Frame frame, EntityRef handle, PhysicsCollider3D* collider,
       Color color, bool disableFill) {
       var style = disableFill ? QuantumGizmoStyle.FillDisabled : default;
-      
+
       if (!frame.Unsafe.TryGetPointer(handle, out Transform3D* transform)) {
         return;
       }
@@ -4994,7 +4997,7 @@ namespace Quantum {
     public static unsafe void DrawCharacterController3DGizmo(Vector3 position, CharacterController3DConfig config,
       Color radiusColor, Color extentsColor, bool disableFill) {
       var style = disableFill ? QuantumGizmoStyle.FillDisabled : default;
-      
+
       GizmoUtils.DrawGizmosSphere(position + config.Offset.ToUnityVector3(),
         config.Radius.AsFloat, radiusColor, style: style);
       GizmoUtils.DrawGizmosSphere(position + config.Offset.ToUnityVector3(),
@@ -8134,7 +8137,7 @@ namespace Quantum {
             p = new NavMeshBakerBenchmarkerProgressBar(bakeData.Name);
           }
           
-          navmesh = NavMeshBaker.BakeNavMesh(data.Asset, bakeData, IProgressBar: p);
+          navmesh = NavMeshBaker.BakeNavMesh(data.Asset, bakeData, progressBar: p);
           navmesh.SerializeType = data.NavMeshSerializeType;
           Debug.LogFormat("Baking Quantum NavMesh '{0}' complete ({1}/{2})", bakeData.Name, i + 1, allBakeData.Count);
         } catch (Exception exn) {

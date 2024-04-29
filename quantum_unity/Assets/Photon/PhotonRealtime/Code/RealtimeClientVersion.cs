@@ -13,6 +13,6 @@ namespace Photon.Realtime
 {
     public partial class RealtimeClient
     {
-        public const string Version = "5.0.3";
+        public const string Version = "5.0.4";
     }
 }

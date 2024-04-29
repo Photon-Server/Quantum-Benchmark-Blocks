@@ -663,7 +663,7 @@ namespace Quantum {
     [FieldOffset(248)]
     public PhysicsSceneSettings PhysicsSettings;
     [FieldOffset(528)]
-    public Int32 ConnectedPlayerCount;
+    public Int32 PlayerConnectedCount;
     [FieldOffset(532)]
     [FramePrinter.FixedArrayAttribute(typeof(Input), 6)]
     private fixed Byte _input_[96];
@@ -686,7 +686,7 @@ namespace Quantum {
         hash = hash * 31 + FrameMetaData.GetHashCode();
         hash = hash * 31 + Systems.GetHashCode();
         hash = hash * 31 + PhysicsSettings.GetHashCode();
-        hash = hash * 31 + ConnectedPlayerCount.GetHashCode();
+        hash = hash * 31 + PlayerConnectedCount.GetHashCode();
         hash = hash * 31 + HashCodeUtils.GetArrayHashCode(input);
         hash = hash * 31 + PlayerLastConnectionState.GetHashCode();
         return hash;
@@ -703,7 +703,7 @@ namespace Quantum {
         FrameMetaData.Serialize(&p->FrameMetaData, serializer);
         Quantum.BitSet1024.Serialize(&p->Systems, serializer);
         PhysicsSceneSettings.Serialize(&p->PhysicsSettings, serializer);
-        serializer.Stream.Serialize(&p->ConnectedPlayerCount);
+        serializer.Stream.Serialize(&p->PlayerConnectedCount);
         FixedArray.Serialize(p->input, serializer, Statics.SerializeInput);
         Quantum.BitSet6.Serialize(&p->PlayerLastConnectionState, serializer);
     }
@@ -4981,7 +4981,7 @@ namespace Quantum {
       Native.Utils.Copy(_globals, frame._globals, sizeof(_globals_));
     }
     partial void InitGen() {
-      Initialize(this, this.SimulationConfig.Entities, 256);
+      Initialize(this, this.SimulationConfig.Entities);
       _ComponentSignalsOnAdded = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       _ComponentSignalsOnRemoved = new ComponentReactiveCallbackInvoker[ComponentTypeId.Type.Length];
       BuildSignalsArrayOnComponentAdded<Quantum.BenchmarkSingleton>();
@@ -5511,11 +5511,9 @@ namespace Quantum {
       bitSet = new(_globals->PlayerLastConnectionState.Bits, _globals->PlayerLastConnectionState.Length);
     }
     partial void ResetPhysicsCodeGen() {
-      var trackedMap2D = Physics2D.Map;
-      if (trackedMap2D != null && trackedMap2D.Guid.IsDynamic) Physics2D.ResetMap();
+      if (Context.Physics2D != null && Physics2D.Map != null && Physics2D.Map.Guid.IsDynamic) Physics2D.ResetMap();
       Physics2D.Init(_globals->PhysicsState2D.MapStaticCollidersState.TrackedMap);
-      var trackedMap3D = Physics3D.Map;
-      if (trackedMap3D != null && trackedMap3D.Guid.IsDynamic) Physics3D.ResetMap();
+      if (Context.Physics3D != null && Physics3D.Map != null && Physics3D.Map.Guid.IsDynamic) Physics3D.ResetMap();
       Physics3D.Init(_globals->PhysicsState3D.MapStaticCollidersState.TrackedMap);
     }
     public unsafe partial struct FrameSignals {

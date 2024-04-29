@@ -213,9 +213,10 @@ namespace Photon.Realtime
                 }
                 ClientState previousState = this.state;
                 this.state = value;
-                if (StateChanged != null)
+
+                if (this.StateChanged != null)
                 {
-                    StateChanged(previousState, this.state);
+                    this.StateChanged(previousState, this.state);
                 }
             }
         }
@@ -383,12 +384,12 @@ namespace Photon.Realtime
         }
 
 
-        /// <summary>An ID for this user. Sent in OpAuthenticate when you connect. If not set, the PlayerName is applied during connect.</summary>
+        /// <summary>Access for AuthValues.UserId. Identifier for the player / user.</summary>
         /// <remarks>
-        /// On connect, if the UserId is null or empty, the client will copy the PlayName to UserId. If PlayerName is not set either
-        /// (before connect), the server applies a temporary ID which stays unknown to this client and other clients.
+        /// In best case unique and authenticated via Authentication Provider.
+        /// If the UserId is not set before connect, the server applies a temporary ID.
         ///
-        /// The UserId is what's used in FindFriends and for fetching data for your account (with WebHooks e.g.).
+        /// The UserId is used in FindFriends and for fetching data for your account (with WebHooks e.g.).
         ///
         /// By convention, set this ID before you connect, not while being connected.
         /// There is no error but the ID won't change while being connected.
@@ -1238,9 +1239,9 @@ namespace Photon.Realtime
                 // in this case, we've got a key-value pair per actor (each
                 // value is a hashtable with the actor's properties then)
                 int actorNr;
-                PhotonHashtable props;
-                string newName;
                 Player target;
+                string targetNick;
+                PhotonHashtable targetProps;
 
                 foreach (object key in actorProperties.Keys)
                 {
@@ -1250,16 +1251,16 @@ namespace Photon.Realtime
                         continue;
                     }
 
-                    props = (PhotonHashtable)actorProperties[key];
-                    newName = (string)props[ActorProperties.PlayerName];
+                    targetProps = (PhotonHashtable)actorProperties[key];
+                    targetNick = (string)targetProps[ActorProperties.NickName];
 
                     target = this.CurrentRoom.GetPlayer(actorNr);
                     if (target == null)
                     {
-                        target = this.CreatePlayer(newName, actorNr, false, props);
+                        target = this.CreatePlayer(targetNick, actorNr, false, targetProps);
                         this.CurrentRoom.StorePlayer(target);
                     }
-                    target.InternalCacheProperties(props);
+                    target.InternalCacheProperties(targetProps);
                 }
             }
         }
@@ -1361,6 +1362,7 @@ namespace Photon.Realtime
             {
                 // ClientState.Joined might be set here or by an Event Join
                 this.State = ClientState.Joined;
+                this.LocalPlayer.UpdateNickNameOnJoined();
 
                 if (this.lastJoinType == JoinType.CreateRoom || (this.lastJoinType == JoinType.JoinOrCreateRoom && this.LocalPlayer.ActorNumber == 1))
                 {
@@ -1395,14 +1397,14 @@ namespace Photon.Realtime
         /// <summary>
         /// Factory method to create a player instance - override to get your own player-type with custom features.
         /// </summary>
-        /// <param name="actorName">The name of the player to be created. </param>
+        /// <param name="nickName">The nickname of the player to be created.</param>
         /// <param name="actorNumber">The player ID (a.k.a. actorNumber) of the player to be created.</param>
         /// <param name="isLocal">Sets the distinction if the player to be created is your player or if its assigned to someone else.</param>
         /// <param name="actorProperties">The custom properties for this new player</param>
         /// <returns>The newly created player</returns>
-        protected internal virtual Player CreatePlayer(string actorName, int actorNumber, bool isLocal, PhotonHashtable actorProperties)
+        protected internal virtual Player CreatePlayer(string nickName, int actorNumber, bool isLocal, PhotonHashtable actorProperties)
         {
-            Player newPlayer = new Player(actorName, actorNumber, isLocal, actorProperties);
+            Player newPlayer = new Player(nickName, actorNumber, isLocal, actorProperties);
             return newPlayer;
         }
 
@@ -1537,27 +1539,13 @@ namespace Photon.Realtime
 
         #region Implementation of IPhotonPeerListener
 
-        /// <summary>Debug output of low level api (and this client).</summary>
-        /// <remarks>This method is not responsible to keep up the state of a RealtimeClient. Calling base.DebugReturn on overrides is optional.</remarks>
+        /// <summary>Debug output handling for the PhotonPeer. Use RealtimePeer.LogLevel if you want to check if a message should get logged.</summary>
+        /// <remarks>The RealtimePeer will internally check its log level before writing any messages, so likely this just logs anything that comes through.</remarks>
         public virtual void DebugReturn(LogLevel level, string message)
         {
-            if (level == LogLevel.Error)
-            {
-                Log.Error(message, this.LogLevel, this.LogPrefix);
-            }
-            else if (level == LogLevel.Warning)
-            {
-                Log.Warn(message, this.LogLevel, this.LogPrefix);
-            }
-            else if (level == LogLevel.Info)
-            {
-                Log.Info(message, this.LogLevel, this.LogPrefix);
-            }
-            else if (level == LogLevel.Debug)
-            {
-                Log.Debug(message, this.LogLevel, this.LogPrefix);
-            }
+            Log.Error(message, this.RealtimePeer.LogLevel, this.LogPrefix);
         }
+
 
         private void CallbackRoomEnterFailed(OperationResponse operationResponse)
         {
@@ -2176,6 +2164,7 @@ namespace Photon.Realtime
 
                         // ClientState.Joined might be set here or by the operation response for Join or Create room
                         this.State = ClientState.Joined;
+                        this.LocalPlayer.UpdateNickNameOnJoined();
 
                         // joinWithCreateOnDemand can turn an OpJoin into creating the room. Then actorNumber is 1 and callback: OnCreatedRoom()
                         if (this.lastJoinType == JoinType.CreateRoom || (this.lastJoinType == JoinType.JoinOrCreateRoom && this.LocalPlayer.ActorNumber == 1))

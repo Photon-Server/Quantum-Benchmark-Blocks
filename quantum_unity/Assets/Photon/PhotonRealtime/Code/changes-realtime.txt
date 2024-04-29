@@ -3,6 +3,13 @@ Photon Realtime C# Client - Changelog
 www.photonengine.com  -  Join our Discord Server: https://dashboard.photonengine.com/account/profile
 
 
+Version 5.0.4 (19. April 2024 - rev7511)
+    Fixed: Minor issue where a NickName change triggered an update of player properties at a time when it had to fail. This now updates when reaching the Joined state.
+    Changed: InternalCacheProperties() will update the Player.NickName for remote players. The local player has control over it's NickName locally.
+    Renamed: ActorProperties.PlayerName to ActorProperties.NickName (keeping the old name as obsolete).
+    Renamed: SetPlayerNameProperty() to SetNickNameProperty().
+    Changed: Anything the PhotonPeer logs via DebugReturn, will now be passed on to the logging with the RealtimePeer.LogLevel. So network level logging is fully independent from the higher level logging.
+
 Version 5.0.3 (25. March 2024 - rev7477)
     Changed: Room.SetExpectedUsers() will now send the current expected users as CAS condition, even if they are null. The server enforces usage of some condition to change Expected Users.
     Changed: ConnectionHandler.BuildInstance() now only creates one ConnectionHandler component (and looks up the component if the GO exists).

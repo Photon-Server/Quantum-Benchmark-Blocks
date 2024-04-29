@@ -4,6 +4,15 @@
         <name>Quantum.Simulation</name>
     </assembly>
     <members>
+        <member name="M:Quantum.NavMeshBaker.BakeNavMesh(Quantum.Map,Quantum.NavMeshBakeData,Quantum.IProgressBar)">
+            <summary>
+            Bake navmesh intermediate date (bake data) into a Quantum navmesh asset.
+            </summary>
+            <param name="map">Map asset that the navmesh belongs to</param>
+            <param name="navmeshBakeData">Bake data</param>
+            <param name="IProgressBar">Progress bar instance, can be null</param>
+            <returns>Baked navmesh asset</returns>
+        </member>
         <member name="F:Quantum.ShutdownCause.Ok">
             <summary>
             Expected shutdown
@@ -77,12 +86,6 @@
             <param name="tick">The tick of the snapshot.</param>
             <param name="data">DeterministicFrame object serialized.</param>
             <returns>True, if the snapshot was set.</returns>
-        </member>
-        <member name="M:Quantum.ChecksumFile.Clone">
-            <summary>
-            Clone this object and discard empty checksum entries.
-            </summary>
-            <returns>New checksum object to save to a replay for example</returns>
         </member>
         <member name="T:Quantum.Core.CullingSystem2D">
             <summary>
@@ -264,49 +267,6 @@
             </summary>
             <returns>String representation</returns>
         </member>
-        <member name="T:Quantum.QuantumJsonFriendlyDataBlob">
-            <summary>
-            Wrapper around saving binary data in Json to work around the issue that Unity Json tools serialize byte array only verbose.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumJsonFriendlyDataBlob.Binary">
-            <summary>
-            The byte array is saved as is.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumJsonFriendlyDataBlob.Base64">
-            <summary>
-            The byte array is saved as Base64 text.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumJsonFriendlyDataBlob.IsCompressed">
-            <summary>
-            Both <see cref="F:Quantum.QuantumJsonFriendlyDataBlob.Binary"/> and <see cref="F:Quantum.QuantumJsonFriendlyDataBlob.Base64"/> can be GZip compressed.
-            </summary>
-        </member>
-        <member name="T:Quantum.QuantumJsonFriendlyDataBlob.Encoder">
-            <summary>
-            Used to customize encoding of this class in interal API.
-            </summary>
-            <param name="data">Data to encode</param>
-            <returns>New instance with encoded data</returns>
-        </member>
-        <member name="M:Quantum.QuantumJsonFriendlyDataBlob.Decode">
-            <summary>
-            Decode the byte[] array.
-            Based on the configuration will return the <see cref="F:Quantum.QuantumJsonFriendlyDataBlob.Binary"/> (unzipped) or the <see cref="F:Quantum.QuantumJsonFriendlyDataBlob.Base64"/> (decoded and unzipped).
-            </summary>
-            <returns>Decoded data</returns>
-        </member>
-        <member name="M:Quantum.QuantumJsonFriendlyDataBlob.Encode(System.Byte[],System.Boolean,System.Boolean)">
-            <summary>
-            Encode a byte[].
-            </summary>
-            <param name="data">The data to encode</param>
-            <param name="isCompressed">Is the data GZip compressed</param>
-            <param name="asBase64String">Is the data converted to base64</param>
-            <returns>Encoded data object</returns>
-        </member>
         <member name="T:Quantum.Frame">
             <summary>
             The user implementation of <see cref="T:Quantum.Core.FrameBase"/> that resides in the project quantum_state and has access to all user relevant classes.
@@ -332,38 +292,9 @@
         </member>
         <member name="P:Quantum.Frame.PlayerCount">
             <summary>
-            Returns the max player count that the simulation was started with <see cref="F:Photon.Deterministic.DeterministicSessionConfig.PlayerCount"/>.
+            Defines the amount of player in this Quantum session.
             </summary>
-        </member>
-        <member name="P:Quantum.Frame.PlayerCountConnected">
-            <summary>
-            Returns the number of players that are currently connected, requires the <see cref="T:Quantum.Core.PlayerConnectedSystem"/>.
-            </summary>
-        </member>
-        <member name="P:Quantum.Frame.NavMeshRegionMask">
-            <summary>
-            Returns the global navmesh region mask that controls toggling on/off regions.
-            </summary>
-        </member>
-        <member name="P:Quantum.Frame.FrameMetaData">
-            <summary>
-            Returns the frame meta data.
-            </summary>
-        </member>
-        <member name="P:Quantum.Frame._physicsState2D">
-            <summary>
-            Returns the physics 2D engine state.
-            </summary>
-        </member>
-        <member name="P:Quantum.Frame._physicsState3D">
-            <summary>
-            Returns the physics 3d engine state.
-            </summary>
-        </member>
-        <member name="P:Quantum.Frame.CommitCommandsMode">
-            <summary>
-            Returns the mode that commands are commited to the simulation.
-            </summary>
+            The value is takes from the Deterministic session config.
         </member>
         <member name="F:Quantum.Frame.Signals">
             <summary>
@@ -915,28 +846,6 @@
             The runner is shutdown.
             </summary>
         </member>
-        <member name="T:Quantum.QuantumInputHistoryData">
-            <summary>
-            Input history wrapper to used to store on replay files.
-            Default way to save is DeltaCompressed in Json with compression to reduce the (Json) file size the most.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumInputHistoryData.DeltaCompressed">
-            <summary>
-            The delta compressed input history stream.
-            [length as int][data as int array][len][data][len][data]..
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumInputHistoryData.DeltaCompressedLastTick">
-            <summary>
-            The last tick that the delta compressed input is available for, required when <see cref="F:Quantum.QuantumInputHistoryData.DeltaCompressed"/> is used.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumInputHistoryData.FullLegacy">
-            <summary>
-            The full verbose input history. This is replaced by <see cref="F:Quantum.QuantumInputHistoryData.DeltaCompressed"/> in Quantum 3.0 but it's still functional.
-            </summary>
-        </member>
         <member name="P:Quantum.SessionContainer.HasGameStartTimedOut">
             <summary>
             Check this when the container reconnects into a running game and handle accordingly.
@@ -1343,65 +1252,61 @@
             <param name="info">The <see cref="T:Quantum.ExitInfo3D"/> with the entities that were touching.</param>
             \ingroup Physics3dApi
         </member>
-        <member name="T:Quantum.QuantumReplayFile">
+        <member name="T:Quantum.ReplayFile">
             <summary>
             A class that holds all relevant data to run a Quantum replay that can be saved and loaded in JSON.
-            A replay can contain an AssetDatabase for convenience during development which should be omitted when using replay inside a production environment where replay sizes are a concern.
-            A replay can contain checksums that are verified when running the replay which is also a development feature.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.InputHistoryDeltaCompressed">
+        <member name="F:Quantum.ReplayFile.RuntimeConfig">
             <summary>
-            Delta compressed binary input history, this is the same that is send over replay webhooks for example.
+            The runtime config class.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.InputHistoryLegacy">
+        <member name="F:Quantum.ReplayFile.RuntimeConfigBinary">
             <summary>
-            Full verbose input used in Quantum 2.1, which is still functional, but has only fringe use cases. 
+            Alternatively the runtime config in binary form, when the replay is saved on a platform that does not have access to the game.dll.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.RuntimeConfigData">
-            <summary>
-            Binary serialized RuntimeConfig.
-            Use AssetSerializer.ConfigToByteArray(runtimeConfig, compress: true)
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumReplayFile.DeterministicConfig">
+        <member name="F:Quantum.ReplayFile.DeterministicConfig">
             <summary>
             The session config.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.LastTick">
+        <member name="F:Quantum.ReplayFile.InputHistory">
+            <summary>
+            The full verbose input history. This is replaced by InputHistoryRaw in Quantum 3.0.
+            </summary>
+        </member>
+        <member name="F:Quantum.ReplayFile.InputHistoryRaw">
+            <summary>
+            The delta compressed input history stream.
+            [length as int][data as int array][len][data][len][data]..
+            </summary>
+        </member>
+        <member name="F:Quantum.ReplayFile.LastTick">
             <summary>
             The last tick of the input.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.InitialTick">
+        <member name="F:Quantum.ReplayFile.InitialTick">
             <summary>
-            The initial tick to start from, requires <see cref="F:Quantum.QuantumReplayFile.InitialFrameData"/> to be set.
+            The initial tick to start from, requires Frame and InitialFrameData to be set.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.InitialFrameData">
+        <member name="F:Quantum.ReplayFile.InitialFrameData">
             <summary>
-            Optional frame data to start the replay with. This is used for savegames for example.
+            The initial frame data (from the session) to start the replay with.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.Checksums">
+        <member name="F:Quantum.ReplayFile.Checksums">
             <summary>
-            Optional checksums. Omit this for replays in production enviroments.
+            Optional checksums.
             </summary>
         </member>
-        <member name="F:Quantum.QuantumReplayFile.AssetDatabaseData">
+        <member name="F:Quantum.ReplayFile.AssetDatabaseGZipped">
             <summary>
-            Optional serialized asset database. Omit this for replays in production enviroments.
-            Use AssetSerializer.SerializeAssets(stream, ResourceManager.LoadAllAssets().ToArray()
+            Optional zipped database.
             </summary>
-        </member>
-        <member name="M:Quantum.QuantumReplayFile.CreateInputProvider">
-            <summary>
-            Helper method to create an input provider based on the combination of the saved input history configurations.
-            </summary>
-            <returns>Replay innput provider to play back the input. Use this in <see cref="F:Quantum.SessionRunner.Arguments.ReplayProvider"/></returns>.
         </member>
         <member name="T:Quantum.SimulationConfig">
             <summary>

@@ -89,7 +89,58 @@
 
 ## Preview
 
-### Build 1443 (Apr 24, 2024)
+### Build 1448 (Apr 26, 2024)
+
+**Breaking Changes**
+
+- The `QuantumMenuConfig` AvailableScene type (`PhotonMenuSceneInfo`) now includes a complete replacement of the `RuntimeConfig` instead of indivdual properties like `Map` and `SystemsConfig`. Both properties have to be linked again on existing `QuantumMenuConfig` assets for each scene
+
+**What's New**
+
+- `[CodeGen(UnityWrapperFolder, "FolderPath")]` - a way to override a folder where Unity prototype wrapper is emit into
+- The Asteroid game sample can be installed with the QuantumHub
+- The Quantum Menu game screen now detects a menu camera and disabled it during the game
+
+**Bug Fixes**
+
+- Fixed: Support for multiple [CodeGen] attributes
+- Fixed: An error log caused by an empty Map asset inside the MapData script
+
+### Build 1442 (Apr 24, 2024)
+
+**Bug Fixes**
+
+- Fixed: Null ref from overlay when sdk not installed
+- Fixed: Gizmos not getting removed with the component
+
+### Build 1439 (Apr 23, 2024)
+
+**Bug Fixes**
+
+- Fixed: NullReferenceException when late-joining a game and having at least on physics engine system disabled (2D or 3D)
+
+### Build 1438 (Apr 20, 2024)
+
+**Changes**
+
+- Upgrading Photon Realtime to version 5.0.4
+
+### Build 1435 (Apr 17, 2024)
+
+**Bug Fixes**
+
+- Fixed: The normal of the collision between a capsule and a box when the first is completely inside the second
+- Fixed: Physics gizmos not obeying the proper config
+
+### Build 1428 (Apr 16, 2024)
+
+**Bug Fixes**
+
+- Fixed: Broadphase queries that stopped to work after add frame teleport to the transforms
+- Fixed: Replace toolbar in overlay for performance
+- Fixed: An issue in the party code generation of the Quantum menu that caused the wrong region being decoded
+
+### Build 1427 (Apr 15, 2024)
 
 **Breaking Changes**
 
@@ -97,11 +148,7 @@
 
 **What's New**
 
-- `Frame.ConnectedPlayerCount`
-
-**Bug Fixes**
-
-- Fixed: `NullReferenceExceptions` when using ComponentFilterStruct
+- `Frame.PlayerConnectedCount`
 
 ### Build 1425 (Apr 12, 2024)
 

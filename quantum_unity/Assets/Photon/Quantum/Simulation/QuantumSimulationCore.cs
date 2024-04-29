@@ -62,15 +62,6 @@ namespace Quantum {
   }
 
   public unsafe partial class Frame {
-    internal static int MaxComponents {
-      get {
-        int result = 256;
-        GetMaxComponentsCodeGen(ref result);
-        return result;
-      }
-    }
-    
-    static partial void GetMaxComponentsCodeGen(ref int maxComponents);
     partial void GetPlayerLastConnectionStateCodeGen(ref BitSetRef bitSet);
     partial void SetPlayerInputCodeGen(PlayerRef player, Input input);
     partial void ResetPhysicsCodeGen();
@@ -467,7 +458,10 @@ namespace Quantum {
     /// <summary>
     /// Returns the number of players that are currently connected, requires the <see cref="PlayerConnectedSystem"/>.
     /// </summary>
-    public Int32 PlayerCountConnected { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => GlobalsCore->ConnectedPlayerCount; }
+    public Int32 PlayerConnectedCount { 
+      [MethodImpl(MethodImplOptions.AggressiveInlining)] get => GlobalsCore->PlayerConnectedCount; 
+      internal set => GlobalsCore->PlayerConnectedCount = value;
+    }
 
     /// <summary>
     /// Returns the global navmesh region mask that controls toggling on/off regions.
@@ -594,7 +588,7 @@ namespace Quantum {
       }
     }
 
-    public Frame(FrameContext context, SystemBase[] systemsAll, SystemBase[] systemsRoots, DeterministicSessionConfig sessionConfig, RuntimeConfig runtimeConfig, SimulationConfig simulationConfig, FP deltaTime) : base(context) {
+      public Frame(FrameContext context, SystemBase[] systemsAll, SystemBase[] systemsRoots, DeterministicSessionConfig sessionConfig, RuntimeConfig runtimeConfig, SimulationConfig simulationConfig, FP deltaTime) : base(context) {
       Assert.Check(context != null);
 
       _systemsAll   = systemsAll;
@@ -1974,7 +1968,9 @@ namespace Quantum {
     /// Asset reference of the Quantum map used with the upcoming game session. 
     /// </summary>
     public AssetRef<Map> Map;
-    /// <summary> Asset reference to the SimulationConfig used with the upcoming game session. </summary>
+    /// <summary>
+    /// Asset reference to the SimulationConfig used with the upcoming game session.
+    /// </summary>
     public AssetRef<SimulationConfig> SimulationConfig;
     /// <summary> 
     /// Asset reference to the Quantum systems configuration.
@@ -7398,9 +7394,11 @@ namespace Quantum.Core {
           stream.Serialize(ref Data[i].Entity);
           stream.Serialize(ref Data[i].Data);
           unsafe {
-            var components = Data[i].Components;
-            stream.SerializeBuffer(components.Set, ComponentSet.BLOCK_COUNT * sizeof(ulong));
-            Data[i].Components = components;
+            var set = Data[i].Components;
+            for (int block = 0; block < ComponentSet.BLOCK_COUNT; ++block) {
+              stream.Serialize((&set)->_set + block);
+            }
+            Data[i].Components = set;
           }
           SerializeUser(stream, ref Data[i]);
         }
@@ -7588,10 +7586,10 @@ namespace Quantum.Core {
         
         if (isPlayerConnected != playerLastConnectionStateRef.IsSet(p)) {
           if (isPlayerConnected) {
-            f.Global->ConnectedPlayerCount++;
+            f.PlayerConnectedCount++;
             f.Signals.OnPlayerConnected(p);
           } else {
-            f.Global->ConnectedPlayerCount--;
+            f.PlayerConnectedCount--;
             f.Signals.OnPlayerDisconnected(p);
           }
 

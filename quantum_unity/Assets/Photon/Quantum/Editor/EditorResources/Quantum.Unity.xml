@@ -156,14 +156,6 @@
              takes place during deserialization, by looking up the prefab in the global DB.
              </summary>
         </member>
-        <member name="P:Quantum.QuantumUnityJsonSerializer.TypeResolver">
-             <summary>
-             Custom type resolver to be used during deserialization.
-            
-             If not set, <see cref="M:System.Type.GetType(System.String,System.Boolean)"/> will be used and an exception will be thrown on missing type.
-             If set and returns null, the type object will be skipped and returned as null.
-             </summary>
-        </member>
         <member name="M:Quantum.QuantumUnityJsonSerializer.ResolvePrefab(Quantum.AssetGuid)">
             <summary>
             Resolves the prefab associated with the provided AssetGuid by looking it up in the global DB.
@@ -524,86 +516,6 @@
         <member name="T:Quantum.QuantumSceneViewComponent">
             <summary>
             A scene view component without context.
-            </summary>
-        </member>
-        <member name="T:Quantum.QuantumStats">
-            <summary>
-            Measures and display basic Quantum statistics on a UI element.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.FrameVerified">
-            <summary>
-            Current verified frame.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.FramePredicted">
-            <summary>
-            Current prediceted frame.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.Predicted">
-            <summary>
-            Number of predicted frames.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.Resimulated">
-            <summary>
-            Number of resimulated frames.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.SimulateTime">
-            <summary>
-            The last simulation time.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.SimulationState">
-            <summary>
-            The state of the simulation.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.NetworkPing">
-            <summary>
-            The network ping measured by the simulation.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.NetworkIn">
-            <summary>
-            The bytes received per second.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.NetworkOut">
-            <summary>
-            The bytes send per second.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.InputOffset">
-            <summary>
-            The currrent input offset.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.ToggleButtonText">
-            <summary>
-            Toggle button text.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.Toggles">
-            <summary>
-            The UI objects to toggle on/off.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.StartEnabled">
-            <summary>
-            Start the game with an open stats window.
-            </summary>
-        </member>
-        <member name="F:Quantum.QuantumStats.UseCurrentBandwidth">
-            <summary>
-            Use only the last second to measure <see cref="F:Quantum.QuantumStats.NetworkOut"/> and <see cref="F:Quantum.QuantumStats.NetworkOut"/> instead of the total time.
-            </summary>
-        </member>
-        <member name="M:Quantum.QuantumStats.ResetNetworkStats">
-            <summary>
-            Resets the bandwidth stats measurement.
             </summary>
         </member>
         <member name="F:Quantum.QuantumUnityDB.DefaultPath">
@@ -1481,56 +1393,6 @@
             A reference to the parent class to access interesting game and entity data.
             </summary>
         </member>
-        <member name="M:Quantum.QuantumEntityViewComponent`1.HasPredictedQuantumComponent``1">
-            <summary>
-            Checks the predicted frame if this Quantum entity has a particular Quantum entity.
-            </summary>
-            <typeparam name="TComponent">Quantum component type</typeparam>
-            <returns>True, if the entity has the component</returns>
-        </member>
-        <member name="M:Quantum.QuantumEntityViewComponent`1.HasVerifiedQuantumComponent``1">
-            <summary>
-            Checks the verified frame if this Quantum entity has a particular Quantum entity.
-            </summary>
-            <typeparam name="TComponent">Quantum component type</typeparam>
-            <returns>True, if the entity has the component</returns>
-        </member>
-        <member name="M:Quantum.QuantumEntityViewComponent`1.GetPredictedQuantumComponent``1">
-            <summary>
-            Returns the desired Quantum component from the entity of the the predicted frame.
-            This method throws exceptions when the Frame or Entity ref are not assigned, as well as when the Quantum entity does not have the component.
-            <see cref="M:Quantum.Core.FrameBase.Get``1(Quantum.EntityRef)"/>
-            </summary>
-            <typeparam name="TComponent">Quantum component type</typeparam>
-            <returns>The Quantum component</returns>
-        </member>
-        <member name="M:Quantum.QuantumEntityViewComponent`1.GetVerifiedQuantumComponent``1">
-            <summary>
-            Returns the desired Quantum component from the entity of the the verified frame.
-            This method throws exceptions when the Frame or Entity ref are not assigned, as well as when the Quantum entity does not have the component.
-            <see cref="M:Quantum.Core.FrameBase.Get``1(Quantum.EntityRef)"/>
-            </summary>
-            <typeparam name="TComponent">Quantum component type</typeparam>
-            <returns>The Quantum component</returns>
-        </member>
-        <member name="M:Quantum.QuantumEntityViewComponent`1.TryGetPredictedQuantumComponent``1(``0@)">
-            <summary>
-            Try to get the component from this Quantum entity and the predicted frame.
-            <see cref="M:Quantum.Core.FrameBase.TryGet``1(Quantum.EntityRef,``0@)"/>
-            </summary>
-            <typeparam name="TComponent">Desired component type</typeparam>
-            <param name="value">The resulting Quantum component instance.</param>
-            <returns>True when the component was found.</returns>
-        </member>
-        <member name="M:Quantum.QuantumEntityViewComponent`1.TryGetVerifiedQuantumComponent``1(``0@)">
-            <summary>
-            Try to get the component from this Quantum entity and the verified frame.
-            <see cref="M:Quantum.Core.FrameBase.TryGet``1(Quantum.EntityRef,``0@)"/>
-            </summary>
-            <typeparam name="TComponent">Desired component type</typeparam>
-            <param name="value">The resulting Quantum component instance.</param>
-            <returns>True when the component was found.</returns>
-        </member>
         <member name="T:Quantum.QuantumEntityViewComponent">
             <summary>
             A entity view component without context type.
@@ -1717,6 +1579,11 @@
             Quantum asset database Json file.
             </summary>
         </member>
+        <member name="F:Quantum.QuantumRunnerLocalReplay.ChecksumFile">
+            <summary>
+            List of checksums to verify against (optional).
+            </summary>
+        </member>
         <member name="F:Quantum.QuantumRunnerLocalReplay.SimulationSpeedMultiplier">
             <summary>
             Simulation speed multiplier to playback the replay in a different speed.
@@ -1735,7 +1602,7 @@
         <member name="F:Quantum.QuantumRunnerLocalReplay.ForceUsingUnityJson">
             <summary>
             Force Unity json deserialization of the deplay file even when Newtonsoft is available.
-            Newtonsoft is very slow when compiled with IL2CPP. But Unity Json deserialization expects the byte arrays to be int array instead on base64 strings.
+            Newtonsoft is very low when compiled with IL2CPP. But Unity Json deserialization expects the byte arrays to be int array instead on base64 strings.
             </summary>
         </member>
         <member name="F:QuantumSDKAttributesTest.LayerMask">

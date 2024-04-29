@@ -369,20 +369,20 @@ namespace Quantum.Editor {
     #region Menu
 
     [MenuItem("Tools/Quantum/Export/Generate Dotnet Quantum.Simulation Project", true, (int)QuantumEditorMenuPriority.Export + 22)]
-    public static bool GenerateProjectCheck() => TryGetGlobal(out var settings);
+    public static bool GenerateDefaultProjectCheck() => TryGetGlobal(out var settings);
 
     [MenuItem("Tools/Quantum/Export/Generate Dotnet Quantum.Simulation Project", false, (int)QuantumEditorMenuPriority.Export + 22)]
-    public static void GenerateProject() {
+    public static void GenerateDefaultProject() {
       if (TryGetGlobal(out var settings)) {
         GenerateProject(settings);
       }
     }
 
     [MenuItem("Tools/Quantum/Export/Build Dotnet Quantum.Simulation Dll", true, (int)QuantumEditorMenuPriority.Export + 22)]
-    public static bool BuildProjectCheck() => TryGetGlobal(out var settings);
+    public static bool BuildDefaultProjectCheck() => TryGetGlobal(out var settings);
 
     [MenuItem("Tools/Quantum/Export/Build Dotnet Quantum.Simulation Dll", false, (int)QuantumEditorMenuPriority.Export + 22)]
-    public static void BuildProject() {
+    public static void BuildDefaultProject() {
       if (TryGetGlobal(out var settings)) {
         GenerateProject(settings);
         BuildProject(settings);

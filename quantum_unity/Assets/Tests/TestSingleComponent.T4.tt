@@ -1,0 +1,61 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+using NUnit.Framework;
+using Quantum;
+using Unity.PerformanceTesting;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+using Assert = NUnit.Framework.Assert;
+using ComponentTest001 = Quantum.Transform2D;
+
+namespace Tests
+{
+
+
+    public class TestSingleComponent : PerfTestBase
+    {
+<#
+    var componentTypes = new List<string>();
+    for (int i = 30; i < 256; i = (i + 64) & ~63)
+    {
+        var componentType = $"ComponentTest{i:D3}";
+        componentTypes.Add(componentType);
+    }
+    
+    foreach (var componentType in componentTypes) {
+        foreach (var percent in new[] { 100, 20, 5 })
+        {
+#>
+        [Test, Performance] public void Single_NoShuffle_<#=percent#>Percent_<#=componentType#>() => NoShuffle<<#= componentType #>>((typeof(<#=componentType#>), <#=percent / 100.0f#>f));     
+        [Test, Performance] public void Single_WithShuffle_<#=percent#>Percent_<#=componentType#>() => WithShuffle<<#= componentType #>>((typeof(<#=componentType#>), <#=percent / 100.0f#>f));     
+
+<#
+        }
+    }
+    
+    // pairs of components, all permutations
+    foreach (var componentType1 in componentTypes)
+    {
+        foreach (var componentType2 in componentTypes)
+        {
+            if (componentType1 == componentType2)
+            {
+                continue;
+            }
+            foreach (var percent in new[] { 100, 20, 5 })
+            {
+#>
+        //[Test, Performance] public void Pair_NoShuffle_<#=percent#>Percent_<#=componentType1#>_<#=componentType2#>() => SimpleFilter<<#= componentType1 #>, <#= componentType2 #>>(<#=percent / 100.0f#>f);     
+        //[Test, Performance] public void Pair_WithShuffle_<#=percent#>Percent_<#=componentType1#>_<#=componentType2#>() => PairComponentWithShuffle<<#= componentType1 #>, <#= componentType2 #>>(<#=percent / 100.0f#>f);
+<#
+            }
+        }
+    }
+#>
+    }
+}
+

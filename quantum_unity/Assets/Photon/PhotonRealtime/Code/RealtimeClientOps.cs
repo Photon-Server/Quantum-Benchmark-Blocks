@@ -870,7 +870,7 @@ namespace Photon.Realtime
                         {
                             this.LocalPlayer.CustomProperties = new PhotonHashtable();
                         }
-                        this.LocalPlayer.CustomProperties[ActorProperties.PlayerName] = this.LocalPlayer.NickName;
+                        this.LocalPlayer.CustomProperties[ActorProperties.NickName] = this.LocalPlayer.NickName;
                     }
 
                     if (this.LocalPlayer.CustomProperties != null && this.LocalPlayer.CustomProperties.Count > 0)
@@ -957,7 +957,7 @@ namespace Photon.Realtime
                         {
                             this.LocalPlayer.CustomProperties = new PhotonHashtable();
                         }
-                        this.LocalPlayer.CustomProperties[ActorProperties.PlayerName] = this.LocalPlayer.NickName;
+                        this.LocalPlayer.CustomProperties[ActorProperties.NickName] = this.LocalPlayer.NickName;
                     }
 
                     if (this.LocalPlayer.CustomProperties != null && this.LocalPlayer.CustomProperties.Count > 0)

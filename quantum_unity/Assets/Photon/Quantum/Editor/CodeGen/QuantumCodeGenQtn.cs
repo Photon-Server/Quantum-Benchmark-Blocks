@@ -140,10 +140,10 @@ namespace Quantum.Editor {
           continue;
         }
 
-        if (!generatedFiles.Add(file.Name)) {
+        if (string.IsNullOrEmpty(file.UserFolder) && !generatedFiles.Add(file.Name)) {
           throw new InvalidOperationException($"File already generated: {file.Name}");
         }
-        UpdateFile(file.Name, file.Contents, file.FormerNames);
+        UpdateFile(file.Name, file.Contents, file.FormerNames, file.UserFolder);
       }
 
       var orphanedFiles = Directory.GetFiles(outputDir, "*.cs")
@@ -167,8 +167,8 @@ namespace Quantum.Editor {
         File.Delete(filePath);
       }
 
-      void UpdateFile(string fileName, string contents, IList<string> formerNames) {
-        var outputPath = Path.Combine(outputDir, fileName);
+      void UpdateFile(string fileName, string contents, IList<string> formerNames, string userFolder) {
+        var outputPath = Path.Combine(string.IsNullOrEmpty(userFolder) ? outputDir : userFolder, fileName);
 
         if (formerNames?.Count > 0 && !File.Exists(outputPath)) {
           // find the first match

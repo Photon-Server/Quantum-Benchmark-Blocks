@@ -47,7 +47,10 @@
         {
             arguments.Validate();
 
-            Log.Info("Connecting to room");
+            if (arguments.PhotonSettings != null) 
+            { 
+                Log.Info("Connecting to room", arguments.PhotonSettings.ClientLogging);
+            }
 
             var asyncConfig = arguments.AsyncConfig ?? AsyncConfig.Global;
 

@@ -665,8 +665,11 @@ namespace Quantum.Editor {
     }
 
     [Serializable]
-    private unsafe struct EntityState {
-      public fixed ulong ComponentSet[Quantum.ComponentSet.BLOCK_COUNT];
+    private struct EntityState {
+      public long ComponentSet0;
+      public long ComponentSet1;
+      public long ComponentSet2;
+      public long ComponentSet3;
       public int EntityRefIndex;
       public int EntityRefVersion;
       public int InspectorId;
@@ -674,14 +677,22 @@ namespace Quantum.Editor {
 
       public ComponentSet EntityComponents {
         get {
-          fixed (ulong* p = ComponentSet) {
-            return *(Quantum.ComponentSet*)p;
+          if (ComponentSet.SIZE == sizeof(long) * 4) {
+            ComponentSet result = default;
+            long* lp = (long*)&result;
+            lp[0] = ComponentSet0;
+            lp[1] = ComponentSet1;
+            lp[2] = ComponentSet2;
+            lp[3] = ComponentSet3;
+            return result;
           }
         }
         set {
-          fixed (ulong* p = ComponentSet) {
-            *(Quantum.ComponentSet*)p = value;
-          }
+          long* lp = (long*)&value;
+          ComponentSet0 = lp[0];
+          ComponentSet1 = lp[1];
+          ComponentSet2 = lp[2];
+          ComponentSet3 = lp[3];
         }
       }
 

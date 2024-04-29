@@ -60,6 +60,10 @@ namespace Quantum.Editor {
     static string ReleaseHistoryRealtimeFilepath => BuildPath(Application.dataPath, "Photon", "PhotonRealtime", "Code", "changes-realtime.txt");
     static string QuantumMenuUnitypackagePath => BuildPath(Application.dataPath, "Photon", "QuantumMenu", "Quantum-Menu.unitypackage");
     static string QuantumMenuScenePath => BuildPath(Application.dataPath, "Photon", "QuantumMenu", "QuantumSampleMenu.unity");
+    static string QuantumMenuConfigPath => BuildPath(Application.dataPath, "Photon", "QuantumMenu", "QuantumMenuConfig.asset");
+    static string QuantumAsteroidsUnitypackagePath => BuildPath(Application.dataPath, "Photon", "QuantumAsteroids", "Quantum-Asteroids.unitypackage");
+    static string QuantumAsteroidsScenePath => BuildPath(Application.dataPath, "Photon", "QuantumAsteroids", "Scenes", "AsteroidsGameplay.unity");
+    static string QuantumAsteroidsThumbnailPath => BuildPath(Application.dataPath, "Photon", "QuantumAsteroids", "Scenes", "AsteroidsMenuThumbnail.png");
 #endif
     static string _releaseHistoryHeader; // TODO: add realtime release notes
     static List<string> _releaseHistoryTextAdded;
@@ -128,6 +132,12 @@ namespace Quantum.Editor {
           QuantumDeterministicSessionConfigAsset.TryGetGlobal(out _) &&
           QuantumEditorSettings.TryGetGlobal(out _);
       }
+    }
+
+    [InitializeOnLoadMethod]
+    static void InitializedPackageImportCallbacks() {
+      // Package import callbacks are removed during domain reload, here we globally set one.
+      AssetDatabase.importPackageCompleted += OnImportPackageCompleted;
     }
 
     [MenuItem("Window/Quantum/Quantum Hub")]
@@ -279,12 +289,12 @@ namespace Quantum.Editor {
       }
     }
 
-    void ClearQuantumPlayerPrefs() {
+    static void ClearQuantumPlayerPrefs() {
       PlayerPrefs.DeleteKey(PhotonServerSettings.Global.BestRegionSummaryKey);
       PlayerPrefs.DeleteKey("Quantum.ReconnectInformation");
     }
 
-    void ClearQuantumMenuPlayerPrefs() {
+    static void ClearQuantumMenuPlayerPrefs() {
       PlayerPrefs.DeleteKey("Photon.Menu.Username");
       PlayerPrefs.DeleteKey("Photon.Menu.Region");
       PlayerPrefs.DeleteKey("Photon.Menu.AppVersion");
@@ -300,11 +310,14 @@ namespace Quantum.Editor {
     void DrawSamplesSection() {
       GUILayout.Label("Install Samples", _headerLabelStyle);
 
+      DrawButtonAction(Icon.Samples, "Install Quantum Asteroids Sample Game", "Multiplayer Asteroids game sample. Parts of the sample are covered by the Quantum 100 online documentation.",
+        callback: () => {
+          AssetDatabase.ImportPackage(QuantumAsteroidsUnitypackagePath, false);
+        });
+
       DrawButtonAction(Icon.Samples, "Install Quantum Menu", "Fully-fledged prototyping online game menu",
         callback: () => {
           AssetDatabase.ImportPackage(QuantumMenuUnitypackagePath, false);
-          QuantumEditorMenuCreateScene.AddScenePathToBuildSettings(QuantumMenuScenePath, true);
-          ClearQuantumMenuPlayerPrefs();
         });
 
       DrawButtonAction(Icon.Samples, "Install Simple Connection Sample Scene", "Creates a scene that showcases the Quantum online connection sequence.",
@@ -315,7 +328,83 @@ namespace Quantum.Editor {
 
       GUILayout.Label("Tutorials", _headerLabelStyle);
 
-      DrawButtonAction(Icon.Documentation, "Quantum 100 Tutorial", "Quantum Fundamentals Tutorial", callback: OpenURL(Url100Tutorial));
+      DrawButtonAction(Icon.Documentation, "Quantum 100 Tutorial", "Open Online Documentation About Quantum Fundamentals", callback: OpenURL(Url100Tutorial));
+    }
+
+    /// <summary>
+    /// The qprototypes have to be reloaded to properly work.
+    /// Reimporting assets only works after the package import.
+    /// </summary>
+    static void OnImportPackageCompleted(string packageName) {
+      // Quantum-Menu
+      if (string.Equals(packageName, Path.GetFileNameWithoutExtension(QuantumMenuUnitypackagePath), StringComparison.Ordinal)) {
+        QuantumEditorMenuCreateScene.AddScenePathToBuildSettings(QuantumMenuScenePath, addToTop: true);
+        // Todo: add empty game scene to menu config here?
+        ClearQuantumMenuPlayerPrefs();
+      }
+
+      // Quantum-Asteroids
+      else if (string.Equals(packageName, Path.GetFileNameWithoutExtension(QuantumAsteroidsUnitypackagePath), StringComparison.Ordinal)) {
+        QuantumEditorMenuCreateScene.AddScenePathToBuildSettings(QuantumAsteroidsScenePath, addToTop: false);
+        AssetDatabase.ImportAsset($"{Path.GetDirectoryName(QuantumAsteroidsUnitypackagePath)}/Resources", ImportAssetOptions.ImportRecursive);
+        AddToQuantumMenuConfig(
+          QuantumAsteroidsScenePath,
+          QuantumAsteroidsThumbnailPath,
+          new Dictionary<string, AssetRef>() {
+              { "Map", new AssetRef(new AssetGuid(477700799046405574)) },
+              { "SystemsConfig", new AssetRef(new AssetGuid(285306802963724605)) },
+              { "SimulationConfig", new AssetRef(new AssetGuid(442089458455835007)) },
+              { "GameConfig", new AssetRef(new AssetGuid(316527076537738773)) },
+              { "DefaultPlayerAvatar", new AssetRef(new AssetGuid(1365103958109072725)) }});
+      }
+    }
+
+    /// <summary>
+    /// Try to add the game scene to the Quantum menu config without using the actual menu dependencies.
+    /// </summary>
+    static void AddToQuantumMenuConfig(string scenePath, string previewPath, Dictionary<string, AssetRef> runtimeConfigSettings) {
+      try {
+        var menuConfig = AssetDatabase.LoadMainAssetAtPath(QuantumMenuConfigPath);
+        if (menuConfig == null) {
+          return;
+        }
+
+        var obj = new SerializedObject(menuConfig);
+        var scenes = obj.FindProperty("_availableScenes");
+
+        // Find already installed menu entry
+        var menuConfigEntry = default(SerializedProperty);
+        for (int i = 0; i < scenes.arraySize; i++) {
+          var entry = scenes.GetArrayElementAtIndex(i);
+          var path = entry.FindPropertyRelative("ScenePath");
+          if (string.Equals(PathUtils.Normalize(path.stringValue), scenePath, StringComparison.Ordinal)) {
+            menuConfigEntry = entry;
+            break;
+          }
+        }
+
+        // Create new menu entry
+        if (menuConfigEntry == null) { 
+          scenes.InsertArrayElementAtIndex(scenes.arraySize);
+          menuConfigEntry = scenes.GetArrayElementAtIndex(scenes.arraySize - 1);
+        }
+
+        // Set or overwrite properties
+        menuConfigEntry.FindPropertyRelative("Name").stringValue = "Asteroids Sample";
+        menuConfigEntry.FindPropertyRelative("ScenePath").stringValue = scenePath;
+        if (string.IsNullOrEmpty(previewPath)) {
+          menuConfigEntry.FindPropertyRelative("Preview").objectReferenceValue = null;
+        } else {
+          menuConfigEntry.FindPropertyRelative("Preview").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(previewPath);
+        }
+        foreach (var setting in runtimeConfigSettings) {
+          menuConfigEntry.FindPropertyRelative($"RuntimeConfig.{setting.Key}.Id.Value").longValue = setting.Value.Id.Value;
+        }
+
+        obj.ApplyModifiedProperties();
+      } catch (Exception e) {
+        Log.Warn($"Failed to add the scene '{scenePath}' to the menu config: {e.Message}");
+      }
     }
     
     void DrawRealtimeReleaseSection() {
