@@ -4,10 +4,8 @@ namespace Tests {
   using Unity.PerformanceTesting;
   using Assert = NUnit.Framework.Assert;
 
-  public class TestSimple : PerfTestBase {
-    private const int Repetitions = 1000;
-
-
+  public class PerfTestBasic : PerfTestBase {
+    
     [Test]
     [Performance]
     public void NoMatches() {
@@ -28,10 +26,10 @@ namespace Tests {
         var filter = frame.Filter<Transform2D>();
         while (filter.Next(out EntityRef e, out Transform2D a)) count++;
 
-        Assert.IsTrue(count == DefaultEntityCount);// to avoid allocs
+        Assert.IsTrue(count == 10000);// to avoid allocs
         return count;
       }, oneTimeSetUp: f => {
-        CreateEntities(f, DefaultEntityCount, typeof(Transform2D));
+        CreateEntities(f, 10000, typeof(Transform2D));
       });
     }
   }

@@ -20,8 +20,18 @@ namespace Tests {
   using AnyInFirstBlock = Quantum.ComponentTest041;
 
   public abstract partial class PerfTestBase {
-    public const int DefaultEntityCount = 20000;
 
+    public static TestParams[] DefaultTestParameters = new[] {
+      new TestParams() {
+        EntityCount     = 6000,
+        ShuffleEntities = false
+      },
+      new TestParams() {
+        EntityCount     = 6000,
+        ShuffleEntities = true
+      }
+    };
+    
     [Test]
     [Performance]
     public void __WarmupAndOverhead() {
@@ -99,7 +109,7 @@ namespace Tests {
 
     
     
-    public void RunTest(Func<Frame, int> test, Action<Frame> setUp = null, Action<Frame> oneTimeSetUp = null, int frameCount = 50, int entityCount = DefaultEntityCount) {
+    public void RunTest(Func<Frame, int> test, Action<Frame> oneTimeSetUp = null, Action<Frame> setUp = null, int frameCount = 50) {
       Assert.IsNull(DelegatingSystem._Update);
       Assert.IsNull(DelegatingSystem._OnInit);
 
@@ -152,6 +162,26 @@ namespace Tests {
 
       f.Unsafe.CommitAllCommands();
       return destroyedEntities;
+    }
+
+    protected void SimpleSetUp(Frame f, TestParams t, params ComponentSpec[] specs) {
+      CreateEntities(f, t.EntityCount, typeof(ComponentAlwaysAdded), specs);
+      if (t.ShuffleEntities) {
+        for (int i = 0; i < 5; i++) {
+          int count = DestroyEntities<ComponentAlwaysAdded>(f, FP._0_20);
+          CreateEntities(f, count, typeof(ComponentAlwaysAdded), specs);
+        }
+      }
+    }
+    
+    
+    public struct TestParams {
+      public int  EntityCount;
+      public bool ShuffleEntities;
+
+      public override string ToString() {
+        return $"Entities: {EntityCount}, Shuffle: {ShuffleEntities}";
+      }
     }
     
     public struct ComponentSpec {

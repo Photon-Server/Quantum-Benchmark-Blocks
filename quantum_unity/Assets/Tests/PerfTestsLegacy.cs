@@ -19,7 +19,7 @@ namespace Tests {
   using WithoutInFirstBlock = Quantum.ComponentTest040;
   using AnyInFirstBlock = Quantum.ComponentTest041;
   
-  public class TestsLegacy : PerfTestBase {
+  public class PerfTestsLegacy : PerfTestBase {
     
     protected static ComponentSpec[] LegacySpecs = new ComponentSpec[] {
       (ComponentSet.Create<ComponentAlwaysAdded, ComponentWithInMiddleBlock, ComponentWithInLastBlock, WithoutInLastBlock>(), 0.33f),
@@ -28,10 +28,8 @@ namespace Tests {
       (ComponentSet.Create<ComponentAlwaysAdded>(), 1.0f)
     };
 
-    [Test, Performance]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void TestWith(bool shuffle) {
+    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))]
+    public void TestWith(TestParams testParams) {
       RunTest(f => {
         var With_Filter = f.Filter<ComponentAlwaysAdded, ComponentWithInMiddleBlock, ComponentWithInLastBlock>();
         int count       = 0;
@@ -39,13 +37,11 @@ namespace Tests {
           count++;
         }
         return count;
-      }, oneTimeSetUp: f => SetUp(f, shuffle));
+      }, oneTimeSetUp: f => SetUp(f, testParams));
     }
 
-    [Test, Performance]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void TestWithWithout(bool shuffle) {
+    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))]
+    public void TestWithWithout(TestParams testParams) {
       var WithoutSet = ComponentSet.Create<WithoutInFirstBlock, WithoutInMiddleBlock, WithoutInLastBlock>();
       RunTest(f => {
         var With_Without_Filter = f.Filter<ComponentAlwaysAdded, ComponentWithInMiddleBlock, ComponentWithInLastBlock>(without: WithoutSet);
@@ -55,13 +51,11 @@ namespace Tests {
         }
 
         return count;
-      }, oneTimeSetUp: f => SetUp(f, shuffle));
+      }, oneTimeSetUp: f => SetUp(f, testParams));
     }
 
-    [Test, Performance]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void TestWithWithoutAny(bool shuffle) {
+    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))]
+    public void TestWithWithoutAny(TestParams testParams) {
       var AnySet = ComponentSet.Create<AnyInFirstBlock, AnyInMiddleBlock, AnyInLastBlock>();
       var WithoutSet = ComponentSet.Create<WithoutInFirstBlock, WithoutInMiddleBlock, WithoutInLastBlock>();
       RunTest(f => {
@@ -72,12 +66,12 @@ namespace Tests {
         }
 
         return count;
-      }, oneTimeSetUp: f => SetUp(f, shuffle));
+      }, oneTimeSetUp: f => SetUp(f, testParams));
     }
     
-    void SetUp(Frame f, bool shuffle) {
-      CreateEntities(f, DefaultEntityCount, null, LegacySpecs);
-      if (shuffle) {
+    void SetUp(Frame f, TestParams t) {
+      CreateEntities(f, t.EntityCount, null, LegacySpecs);
+      if (t.ShuffleEntities) {
         for (int i = 0; i < 5; i++) {
           int count = DestroyEntities<ComponentAlwaysAdded>(f, FP._0_20);
           CreateEntities(f, count, null, LegacySpecs);

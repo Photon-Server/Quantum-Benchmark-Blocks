@@ -1,0 +1,56 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+using NUnit.Framework;
+using Quantum;
+using Unity.PerformanceTesting;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+using Assert = NUnit.Framework.Assert;
+using ComponentTest001 = Quantum.Transform2D;
+
+namespace Tests {
+  public class PerfTestJustWith : PerfTestBase {
+<#
+    var componentTypes = new List<string>();
+    for (int i = 30; i < 256; i = (i + 64) & ~63) {
+        var componentType = $"ComponentTest{i:D3}";
+        componentTypes.Add(componentType);
+    }
+    
+    foreach (var componentType0 in componentTypes) {
+        foreach (var percent in new[] { 100, 20, 5 }) {
+#>
+    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))] 
+    public void Single_<#=percent#>Percent_<#=componentType0#>(TestParams t) => RunTest(
+      MakeSimpleFilter<<#= componentType0 #>>(), 
+      f => SimpleSetUp(f, t, (typeof(<#=componentType0#>), <#=percent / 100.0f#>f)));
+ 
+<#
+        }
+    }
+    
+    // pairs of components, all permutations
+    for (int i = 0; i < componentTypes.Count; ++i) {
+        var componentType0 = componentTypes[i];
+        for (int j = i + 1; j < componentTypes.Count; ++j) {
+            var componentType1 = componentTypes[j];
+            foreach (var percent in new[] { 100, 20, 5 }) {
+    
+#>
+    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))] 
+    public void Pair_<#=percent#>Percent_<#=componentType0#>_<#=componentType1#>(TestParams t) => RunTest(
+      MakeSimpleFilter<<#= componentType0 #>, <#=componentType1#>>(), 
+      f => SimpleSetUp(f, t, (ComponentSet.Create<<#=componentType0#>, <#=componentType1#>>(), <#=percent / 100.0f#>f)));        
+
+<#
+            }
+        }
+    }
+#>
+  }
+}
+

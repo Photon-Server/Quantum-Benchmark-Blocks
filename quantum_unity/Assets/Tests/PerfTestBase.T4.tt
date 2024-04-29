@@ -10,6 +10,7 @@ namespace Tests {
   using Photon.Deterministic;
   using Quantum;
   using UnityEngine;
+  using System;
   using Assert = NUnit.Framework.Assert;
 
   using ComponentAlwaysAdded = Quantum.Transform3D;
@@ -21,39 +22,15 @@ namespace Tests {
     var genericParamsConstraints = string.Join(" ", Enumerable.Range(0, i).Select(x => $"where T{x} : unmanaged, IComponent"));
     var genericOut = string.Join(", ", Enumerable.Range(0, i).Select(x => $"out T{x} t{x}"));
 #>
-    public void NoShuffle<<#=genericParams#>>(params ComponentSpec[] specs) <#=genericParamsConstraints#> {
-      RunTest(frame => {
-          int count  = 0;
-          var filter = frame.Filter<<#=genericParams#>>();
-          while (filter.Next(out EntityRef e, <#=genericOut#>)) {
-            count++;
-          }
-          Assert.NotZero(count);
-          return count;
-        }, oneTimeSetUp: f => { 
-          CreateEntities(f, DefaultEntityCount, alwaysAdd: typeof(ComponentAlwaysAdded), specs); 
+    public static Func<Frame, int> MakeSimpleFilter<<#=genericParams#>>() <#=genericParamsConstraints#> {
+      return frame => {
+        int count  = 0;
+        var filter = frame.Filter<<#=genericParams#>>();
+        while (filter.Next(out EntityRef e, <#=genericOut#>)) {
+          count++;
         }
-      );
-    }
-
-    public void WithShuffle<<#=genericParams#>>(params ComponentSpec[] specs) <#=genericParamsConstraints#> {
-      RunTest(frame => {
-          int count  = 0;
-          var filter = frame.Filter<<#=genericParams#>>();
-          while (filter.Next(out EntityRef e, <#=genericOut#>)) {
-            count++;
-          }
-          Assert.NotZero(count);
-          return count;
-        }, 
-        oneTimeSetUp: f => { 
-          CreateEntities(f, DefaultEntityCount, alwaysAdd: typeof(ComponentAlwaysAdded), specs);
-          for (int i = 0; i < 5; i++) {
-            int count = DestroyEntities<ComponentAlwaysAdded>(f, FP._0_20);
-            CreateEntities(f, count, alwaysAdd: typeof(ComponentAlwaysAdded), specs);
-          }
-        }
-      );
+        return count;
+      };
     }
 <#
   }
