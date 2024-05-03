@@ -4,20 +4,11 @@ namespace Tests {
   using Photon.Deterministic;
   using Quantum;
   using Unity.PerformanceTesting;
-  using Unity.PerformanceTesting.Measurements;
   using UnityEngine;
   using Assert = NUnit.Framework.Assert;
   using Input = Quantum.Input;
   
-  using ComponentWithInMiddleBlock = Quantum.ComponentTest100;
-  using ComponentWithInLastBlock = Quantum.ComponentTest200;
-  using WithoutInMiddleBlock = Quantum.ComponentTest101;
-  using WithoutInLastBlock = Quantum.ComponentTest201;
-  using AnyInMiddleBlock = Quantum.ComponentTest102;
-  using AnyInLastBlock = Quantum.ComponentTest202;
   using ComponentAlwaysAdded = Quantum.Transform3D;
-  using WithoutInFirstBlock = Quantum.ComponentTest040;
-  using AnyInFirstBlock = Quantum.ComponentTest041;
 
   public abstract partial class PerfTestBase {
 

@@ -20,37 +20,52 @@ namespace Tests {
         var componentType = $"ComponentTest{i:D3}";
         componentTypes.Add(componentType);
     }
-    
-    foreach (var componentType0 in componentTypes) {
-        foreach (var percent in new[] { 100, 20, 5 }) {
-#>
-    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))] 
-    public void Single_<#=percent#>Percent_<#=componentType0#>(TestParams t) => RunTest(
-      MakeSimpleFilter<<#= componentType0 #>>(), 
-      f => SimpleSetUp(f, t, (typeof(<#=componentType0#>), <#=percent / 100.0f#>f)));
- 
-<#
-        }
-    }
-    
-    // pairs of components, all permutations
-    for (int i = 0; i < componentTypes.Count; ++i) {
-        var componentType0 = componentTypes[i];
-        for (int j = i + 1; j < componentTypes.Count; ++j) {
-            var componentType1 = componentTypes[j];
-            foreach (var percent in new[] { 100, 20, 5 }) {
-    
-#>
-    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))] 
-    public void Pair_<#=percent#>Percent_<#=componentType0#>_<#=componentType1#>(TestParams t) => RunTest(
-      MakeSimpleFilter<<#= componentType0 #>, <#=componentType1#>>(), 
-      f => SimpleSetUp(f, t, (ComponentSet.Create<<#=componentType0#>, <#=componentType1#>>(), <#=percent / 100.0f#>f)));        
 
-<#
+    foreach (var percent in new[] { 100, 20, 5 }) {
+        for (int i = 0; i < componentTypes.Count; ++i) {
+            var type0 = componentTypes[i];
+            GenerateTest(percent, type0);
+            for(int j = i + 1; j < componentTypes.Count; ++j) {
+                var type1 = componentTypes[j];
+                GenerateTest(percent, type0, type1);
+                for(int k = j + 1; k < componentTypes.Count; ++k) {
+                    var type2 = componentTypes[k];
+                    GenerateTest(percent, type0, type1, type2);
+                    for(int l = k + 1; l < componentTypes.Count; ++l) {
+                        var type3 = componentTypes[l];
+                        GenerateTest(percent, type0, type1, type2, type3);
+                    }
+                }
             }
         }
     }
 #>
+
+
   }
 }
 
+<#+   // Start of class feature block
+
+    private void GenerateTest(int percent, params string[] types)
+    {
+        var genericParams = $"<{string.Join(", ", types)}>";
+        WriteLine($"    [Test, Performance, TestCaseSource(nameof(DefaultTestParameters))]");
+        WriteLine($"    public void {GetCardinalityName(types.Length)}_{percent}Percent_{string.Join("_", types)}(TestParams t) => RunTest(");
+        WriteLine($"      MakeSimpleFilter{genericParams}(), ");
+        WriteLine($"      f => SimpleSetUp(f, t, (ComponentSet.Create{genericParams}(), {percent / 100.0f}f))");
+        WriteLine($"    );");
+    }
+
+    string GetCardinalityName(int num)
+    {
+        switch (num) {
+            case 1: return "Single";
+            case 2: return "Pair";
+            case 3: return "Triplet";
+            case 4: return "Quartet";
+            default:
+                throw new NotSupportedException();
+        }
+    }
+#>

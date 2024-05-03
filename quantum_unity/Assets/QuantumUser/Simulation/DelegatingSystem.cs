@@ -14,11 +14,11 @@ namespace Quantum {
     }
   }
 
-  public class PreDelegatingSystem : DelegatingSystemBase<PreDelegatingSystem> {
-  }
-
-  public class PostDelegatingSystem : DelegatingSystemBase<PostDelegatingSystem> {
-  }
+  // public class PreDelegatingSystem : DelegatingSystemBase<PreDelegatingSystem> {
+  // }
+  //
+  // public class PostDelegatingSystem : DelegatingSystemBase<PostDelegatingSystem> {
+  // }
 
   public class DelegatingSystem : DelegatingSystemBase<DelegatingSystem> {
   }
