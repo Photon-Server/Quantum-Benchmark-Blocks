@@ -26,7 +26,9 @@ namespace Tests {
         var filter = frame.Filter<Transform2D>();
         while (filter.Next(out EntityRef e, out Transform2D a)) count++;
 
-        Assert.IsTrue(count == 10000);// to avoid allocs
+        if (count != 10000) {
+          Assert.Fail($"Expected 10000, got {count}");
+        }
         return count;
       }, oneTimeSetUp: f => {
         CreateEntities(f, 10000, typeof(Transform2D));
