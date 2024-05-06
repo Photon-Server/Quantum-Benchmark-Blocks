@@ -14,11 +14,11 @@ namespace Tests {
 
     public static TestParams[] DefaultTestParameters = new[] {
       new TestParams() {
-        EntityCount     = 6000,
+        EntityCount     = 15000,
         ShuffleEntities = false
       },
       new TestParams() {
-        EntityCount     = 6000,
+        EntityCount     = 15000,
         ShuffleEntities = true
       }
     };
