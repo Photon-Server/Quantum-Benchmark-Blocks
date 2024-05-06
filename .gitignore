@@ -350,3 +350,7 @@ quantum_plugin_sdk/Lib/**/Photon.Plugin.Diagnostics.dll
 quantum_plugin_sdk/Lib/**/Photon.WebHooksAPI.dll
 quantum_plugin_sdk/Lib/**/System.*
 quantum_plugin_sdk/Lib/**/Microsoft.*
+
+TestResults/
+UnityPerformanceBenchmark/
+UnityPerformanceBenchmarkReports/

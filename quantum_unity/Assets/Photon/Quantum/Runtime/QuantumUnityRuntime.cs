@@ -10245,6 +10245,12 @@ namespace Quantum {
 
     private List<SessionRunner> _activeRunners = new List<SessionRunner>();
 
+
+    [UnityEngine.RuntimeInitializeOnLoadMethod]
+    private static void Reset() {
+      _instance = null;
+    }
+
     public void ShutdownAll() {
       for (int i = _activeRunners.Count - 1; i >= 0; i--) {
         _activeRunners[i].Shutdown();

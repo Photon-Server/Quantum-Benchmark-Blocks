@@ -8253,7 +8253,6 @@ namespace Quantum.Editor {
     private static string SanitizeTypeName(Type type) {
       return type.FullName.Replace('+', '.');
     }
-
     public static void InvalidateCache() {
       _parsedCodeDocs.Clear();
       _guiContentCache.Clear();
@@ -8366,14 +8365,23 @@ namespace Quantum.Editor {
           if (AssetDatabaseUtils.HasLabel(path, Label)) {
             QuantumEditorLog.Trace($"Code doc {path} was imported, refreshing");
             InvalidateCache();
+            continue;
           }
 
           // is there a dll with the same name?
-          if (File.Exists(path.Substring(0, path.Length - ExtensionWithDot.Length) + ".dll")) {
-            QuantumEditorLog.Trace($"Detected a dll next to {path}, applying label and refreshing.");
-            AssetDatabaseUtils.SetLabel(path, Label, true);
-            InvalidateCache();
+          if (!File.Exists(path.Substring(0, path.Length - ExtensionWithDot.Length) + ".dll")) {
+            QuantumEditorLog.Trace($"No DLL next to {path}, not going to add label {Label}.");
+            continue;
           }
+
+          if (!path.StartsWith("Assets/Photon/")) {
+            QuantumEditorLog.Trace($"DLL is out of supported folder, not going to add label: {path}");
+            continue;
+          }
+
+          QuantumEditorLog.Trace($"Detected a dll next to {path}, applying label and refreshing.");
+          AssetDatabaseUtils.SetLabel(path, Label, true);
+          InvalidateCache();
         }
       }
     }
@@ -11782,7 +11790,7 @@ namespace Quantum.Editor {
       All        = Predefined | InPackages | InAssets | Editor | Runtime,
     }
 
-    HashSet<string> _allAssemblies;
+    Dictionary<string, AssemblyInfo> _allAssemblies;
 
     protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
       var  assemblyName = property.stringValue;
@@ -11790,12 +11798,18 @@ namespace Quantum.Editor {
       
       if (!string.IsNullOrEmpty(assemblyName)) {
         if (_allAssemblies == null) {
-          _allAssemblies = new HashSet<string>(GetAssemblies(AsmDefType.All), StringComparer.OrdinalIgnoreCase);
+          _allAssemblies = GetAssemblies(AsmDefType.All).ToDictionary(x => x.Name, x => x);
         }
 
-        if (!_allAssemblies.Contains(assemblyName, StringComparer.OrdinalIgnoreCase)) {
+        if (!_allAssemblies.TryGetValue(assemblyName, out var assemblyInfo)) {
           SetInfo($"Assembly not found: {assemblyName}");
           notFound = true;
+        } else if (((AssemblyNameAttribute)attribute).RequiresUnsafeCode && !assemblyInfo.AllowUnsafeCode) {
+          if (assemblyInfo.IsPredefined) {
+            SetError($"Predefined assemblies need 'Allow Unsafe Code' enabled in Player Settings");
+          } else {
+            SetError($"Assembly does not allow unsafe code");
+          }
         }
       }
 
@@ -11834,14 +11848,14 @@ namespace Quantum.Editor {
               menu.AddSeparator(prefix);
             }
 
-            foreach (var name in GetAssemblies(flag | AsmDefType.InPackages)) {
-              menu.AddItem(new GUIContent($"{prefix}Packages/{name}"), string.Equals(name, assemblyName, StringComparison.OrdinalIgnoreCase), onClicked, name);
+            foreach (var asm in GetAssemblies(flag | AsmDefType.InPackages)) {
+              menu.AddItem(new GUIContent($"{prefix}Packages/{asm.Name}"), string.Equals(asm.Name, assemblyName, StringComparison.OrdinalIgnoreCase), onClicked, asm.Name);
             }
 
             menu.AddSeparator(prefix);
 
-            foreach (var name in GetAssemblies(flag | AsmDefType.InAssets | AsmDefType.Predefined)) {
-              menu.AddItem(new GUIContent($"{prefix}{name}"), string.Equals(name, assemblyName, StringComparison.OrdinalIgnoreCase), onClicked, name);
+            foreach (var asm in GetAssemblies(flag | AsmDefType.InAssets | AsmDefType.Predefined)) {
+              menu.AddItem(new GUIContent($"{prefix}{asm.Name}"), string.Equals(asm.Name, assemblyName, StringComparison.OrdinalIgnoreCase), onClicked, asm.Name);
             }
           }
 
@@ -11856,61 +11870,68 @@ namespace Quantum.Editor {
       }
     }
 
-    static IEnumerable<string> GetAssemblies(AsmDefType types) {
-      IEnumerable<string> query = Enumerable.Empty<string>();
+    static IEnumerable<AssemblyInfo> GetAssemblies(AsmDefType types) {
+      var result = new Dictionary<string, AsmDefData>(StringComparer.OrdinalIgnoreCase);
 
       if (types.HasFlag(AsmDefType.Predefined)) {
         if (types.HasFlag(AsmDefType.Runtime)) {
-          query = query.Concat(new[] {
-            "Assembly-CSharp-firstpass",
-            "Assembly-CSharp"
-          });
+          yield return new AssemblyInfo("Assembly-CSharp-firstpass", PlayerSettings.allowUnsafeCode, true);
+          yield return new AssemblyInfo("Assembly-CSharp", PlayerSettings.allowUnsafeCode, true);
         }
 
         if (types.HasFlag(AsmDefType.Editor)) {
-          query = query.Concat(new[] {
-            "Assembly-CSharp-Editor-firstpass",
-            "Assembly-CSharp-Editor"
-          });
+          yield return new AssemblyInfo("Assembly-CSharp-Editor-firstpass", PlayerSettings.allowUnsafeCode, true);
+          yield return new AssemblyInfo("Assembly-CSharp-Editor", PlayerSettings.allowUnsafeCode, true);
         }
       }
 
       if (types.HasFlag(AsmDefType.InAssets) || types.HasFlag(AsmDefType.InPackages)) {
-        query = query.Concat(
-          AssetDatabase.FindAssets("t:asmdef")
-           .Select(x => AssetDatabase.GUIDToAssetPath(x))
-           .Where(x => {
-              if (types.HasFlag(AsmDefType.InAssets) && x.StartsWith("Assets/")) {
-                return true;
-              } else if (types.HasFlag(AsmDefType.InPackages) && x.StartsWith("Packages/")) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-           .Select(x => JsonUtility.FromJson<AsmDefData>(File.ReadAllText(x)))
-           .Where(x => {
-              bool editorOnly = x.includePlatforms.Length == 1 && x.includePlatforms[0] == "Editor";
-              if (types.HasFlag(AsmDefType.Runtime) && !editorOnly) {
-                return true;
-              } else if (types.HasFlag(AsmDefType.Editor) && editorOnly) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-           .Select(x => x.name)
-           .Distinct()
-        );
+        var query = AssetDatabase.FindAssets("t:asmdef")
+         .Select(x => AssetDatabase.GUIDToAssetPath(x))
+         .Where(x => {
+            if (types.HasFlag(AsmDefType.InAssets) && x.StartsWith("Assets/")) {
+              return true;
+            } else if (types.HasFlag(AsmDefType.InPackages) && x.StartsWith("Packages/")) {
+              return true;
+            } else {
+              return false;
+            }
+         })
+         .Select(x => JsonUtility.FromJson<AsmDefData>(File.ReadAllText(x)))
+         .Where(x => {
+           bool editorOnly = x.includePlatforms.Length == 1 && x.includePlatforms[0] == "Editor";
+           if (types.HasFlag(AsmDefType.Runtime) && !editorOnly) {
+             return true;
+           } else if (types.HasFlag(AsmDefType.Editor) && editorOnly) {
+             return true;
+           } else {
+             return false;
+           }
+         });
+        
+        foreach (var asmdef in query) {
+          yield return new AssemblyInfo(asmdef.name, asmdef.allowUnsafeCode, false);
+        }
       }
-
-      return query;
     }
 
     [Serializable]
     private class AsmDefData {
       public string[] includePlatforms = Array.Empty<string>();
       public string   name             = string.Empty;
+      public bool     allowUnsafeCode;
+    }
+    
+    private struct AssemblyInfo {
+      public string Name;
+      public bool   AllowUnsafeCode;
+      public bool   IsPredefined;
+      
+      public AssemblyInfo(string name, bool allowUnsafeCode, bool isPredefined) {
+        Name           = name;
+        AllowUnsafeCode = allowUnsafeCode;
+        IsPredefined   = isPredefined;
+      }
     }
   }
 }
@@ -17510,7 +17531,7 @@ namespace Quantum.Editor {
     static UserFile[] WorkspaceFiles = new UserFile[] {
       new UserFile { Filename = "readme.txt", Template = TemplateUserReadme, Guid = "d06d5bec0132004488c35943b906d0b0" },
       new UserFile { Filename = "Simulation/Quantum.Simulation.asmref", Template = TemplateUserAssemblyReference("5d82202959c2f144ea95e134645b6833"), Guid = "02b31fc42166b83489f6420d738b63e8" },
-      new UserFile { Filename = "View/Quantum.Unity.asmref", Template = TemplateUserAssemblyReference("f6fa0c2f8b9a9f64897d3351666f3d66"), Guid = "f63dd265c2b202b46a7d5fa69ba403ad" },
+      new UserFile { Filename = "View/Generated/Quantum.Unity.asmref", Template = TemplateUserAssemblyReference("f6fa0c2f8b9a9f64897d3351666f3d66"), Guid = "f63dd265c2b202b46a7d5fa69ba403ad" },
       new UserFile { Filename = "Editor/Quantum.Unity.Editor.asmref", Template = TemplateUserAssemblyReference("3dc2666f1394e2c48a30ea492efb1717"), Guid = "a36abd0809aaad94eab47210c35fc77b" },
       new UserFile { Filename = "Editor/CodeGen/Quantum.Unity.Editor.CodeGen.asmref", Template = TemplateUserAssemblyReference("fdae25391b6090942b63551d0cc45292"), Guid = "35245754b8fc0864eb5e25678cabd7b8" },
     };

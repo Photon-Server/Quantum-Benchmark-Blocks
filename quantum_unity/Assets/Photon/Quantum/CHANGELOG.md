@@ -89,6 +89,34 @@
 
 ## Preview
 
+### Build 1458 (May 03, 2024)
+
+**Changes**
+
+- Moving the default place of `Quantum.Unity.asmref` into `QuantumUser/View/Generated`, the current place suggested that all view script have to be added to the Quantum.Unity assembly reference
+
+**Bug Fixes**
+
+- Fixed: `QuantumCodeDoc` label applied on .xml files outside of Photon/Assets
+- Fixed: An issue in the Quantum Menu that caused AuthenticationValues to be overwritten when using custom auth
+- Fixed: An issue in the RawInputCache that caused `Cache is full` errors and will now grow the buffer at runtime
+
+### Build 1455 (May 01, 2024)
+
+**Bug Fixes**
+
+- Fixed: Debug assert that could fail when resetting or reinitializing a map on the 2D or 3D physics engines
+
+### Build 1452 (Apr 30, 2024)
+
+**Changes**
+
+- `FPQuaternion.LookRotation(FPVector3, bool)` overload is now deprecated (optional bool parameter was never used) and `FPQuaternion.LookRotation(FPVector3)` was added in replacement
+
+**Bug Fixes**
+
+- Fixed: An issues in the `QuantumRunnerRegistry` that kept old runner instances when using domain reload off in Unity Editor
+
 ### Build 1448 (Apr 26, 2024)
 
 **Breaking Changes**
