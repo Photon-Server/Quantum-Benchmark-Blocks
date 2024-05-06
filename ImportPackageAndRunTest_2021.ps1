@@ -5,7 +5,8 @@ param (
     [string]$ScriptingBackend = "IL2CPP",
     [string]$Platform = "StandaloneWindows64",
     [string]$TestFilter,
-    [switch]$IsBaseline
+    [switch]$IsBaseline,
+    [switch]$AddPragmaMaxComponents512    
 )
 
 $UnityDefaultRoot = "${env:ProgramFiles}\Unity\Hub\Editor"
@@ -38,6 +39,8 @@ Write-Host "Package branch: $PackageBranch"
 $ProjectPath = Join-Path $PSScriptRoot "quantum_unity"
 $RootFolder = $PSScriptRoot
 $Prefix = "${PackageBranch}_$(Get-Date -Format "yyyyMMdd_HHmmss")"
+$TestTempFolder = Join-Path $ProjectPath "Assets\TempTestData"
+
 
 if ($IsBaseline) {
     $TestResultsPath = Join-Path $RootFolder "TestResults\${Platform}_${ScriptingBackend}_baseline.xml"
@@ -59,8 +62,17 @@ function Start-UnityProcess {
     }
 }
 
+# delete everything in TempTestFolder except for .gitkeep
+Get-ChildItem -Path $TestTempFolder -Exclude ".gitkeep" | Remove-Item -Recurse -Force
+
 Write-Host "Importing package $PackagePath"
 Start-UnityProcess -UnityPath $UnityPath -Arguments "-projectPath `"$ProjectPath`" -buildTarget $Platform  -importPackage `"$PackagePath`" -logFile `"$Prefix.log`" -ignorecompilererrors -batchmode -quit"
+
+if ($AddPragmaMaxComponents512) {
+    # add a .qtn file with #pragma max_components 512
+    $PragmaMaxComponentsPath = Join-Path $TestTempFolder "MaxComponents512.qtn"
+    Set-Content -Path $PragmaMaxComponentsPath -Value "#pragma max_components 512"
+}
 
 Write-Host "Running codegen"
 Start-UnityProcess -UnityPath $UnityPath -Arguments "-projectPath `"$ProjectPath`" -executeMethod Quantum.Editor.QuantumCodeGenQtn.Run -logFile `"$Prefix.log`" -ignorecompilererrors -batchmode -quit"
