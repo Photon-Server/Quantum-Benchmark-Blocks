@@ -9,7 +9,14 @@ param (
     [switch]$AddPragmaMaxComponents512    
 )
 
-$UnityDefaultRoot = "${env:ProgramFiles}\Unity\Hub\Editor"
+# this path differs depending on whether we're on a Windows or Mac machine
+if ($env:OS -eq "Windows_NT") {
+    $UnityDefaultRoot = "${env:ProgramFiles}\Unity\Hub\Editor"
+    $UnitySuffix = "\Editor\Unity.exe"
+} else {
+    $UnityDefaultRoot = "/Applications/Unity/Hub/Editor"
+    $UnitySuffix = "/Unity.app/Contents/MacOS/Unity"
+}
 
 if (!$UnityVersion) {
     $UnityVersion = $MyInvocation.MyCommand.Name -replace ".*_"
@@ -20,7 +27,7 @@ if (!$env:UNITY_ROOT) {
     $env:UNITY_ROOT = $UnityDefaultRoot
 }
 
-$UnityPath = Get-ChildItem -Path "$env:UNITY_ROOT\$UnityVersion*" -Directory | ForEach-Object { "$_\Editor\Unity.exe" } | Select-Object -Last 1
+$UnityPath = Get-ChildItem -Path "$env:UNITY_ROOT\$UnityVersion*" -Directory | ForEach-Object { "$_${UnitySuffix}" } | Select-Object -Last 1
 
 if (!$UnityPath) {
     Write-Host "Unity $UnityVersion is not installed in $env:UNITY_ROOT. To change the installation folder, set UNITY_ROOT environment variable."
@@ -54,7 +61,8 @@ function Start-UnityProcess {
         [string]$Arguments
     )
 
-    $process = Start-Process -Wait -PassThru -FilePath $UnityPath -ArgumentList $Arguments
+    # Write-Host "Starting Unity: $UnityPath $Arguments"
+    $process = Start-Process -FilePath $UnityPath -Wait -PassThru -ArgumentList $Arguments
 
     if ($process.ExitCode -ne 0) {
         Write-Error "Process failed with exit code $($process.ExitCode)"
